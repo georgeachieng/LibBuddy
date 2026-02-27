@@ -485,7 +485,11 @@ class LibBuddyCLI:
 
 
 def main() -> None:
-    app = LibBuddyCLI()
+    try:
+        app = LibBuddyCLI()
+    except ServiceNotReadyError as exc:
+        print(f"Setup issue: {exc}")
+        return
     app.run()
 
 

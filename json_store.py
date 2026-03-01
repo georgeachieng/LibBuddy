@@ -1,3 +1,5 @@
+
+#write code here
 import json
 import os
 
@@ -35,3 +37,4 @@ def generate_id(filename):
     if not data:
         return 1
     return max(item.get('id', 0) for item in data) + 1
+

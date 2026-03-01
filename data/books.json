@@ -1,1 +1,26 @@
-//write code here
+[
+  {
+    "id": 1,
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "isbn": "978-0132350884",
+    "total_copies": 3,
+    "available_copies": 2
+  },
+  {
+    "id": 2,
+    "title": "The Pragmatic Programmer",
+    "author": "David Thomas",
+    "isbn": "978-0135957059",
+    "total_copies": 2,
+    "available_copies": 2
+  },
+  {
+    "id": 3,
+    "title": "Design Patterns",
+    "author": "Gang of Four",
+    "isbn": "978-0201633610",
+    "total_copies": 1,
+    "available_copies": 1
+  }
+]

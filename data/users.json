@@ -1,1 +1,16 @@
-//write code here
+[
+  {
+    "id": 1,
+    "name": "Admin User",
+    "email": "admin@libbuddy.com",
+    "password_hash": "240be518fabd2724ddb6f04eeb9d5f2d9c3bfb3e2a3e3a3e3a3e3a3e3a3e3a3e",
+    "role": "admin"
+  },
+  {
+    "id": 2,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password_hash": "5e884898da28047d51db6f4c5db6e58e53bdacf7ddd0f89b0c6db2ae2e3b6a3c",
+    "role": "user"
+  }
+]

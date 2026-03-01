@@ -13,6 +13,7 @@ class LibBuddyCLI:
     def __init__(self) -> None:
         self.auth_service = self._load_service("services.auth_service", "AuthService")
         self.library_service = self._load_service("services.library_service", "LibraryService")
+        self.review_service = self._load_service("services.review_service", "ReviewService")
         self.current_user: Any = None
 
     def _load_service(self, module_path: str, class_name: str) -> Any:
@@ -380,6 +381,115 @@ class LibBuddyCLI:
                 f"Role: {self._get_field(user, 'role')}"
             )
 
+    def add_review(self) -> None:
+        print("\n=== Add Review ===")
+        user_id = self._get_current_user_id()
+        book_id = self._prompt_int("Book ID to review: ", min_value=1)
+        rating = self._prompt_int("Rating (1-5): ", min_value=1)
+
+        if rating > 5:
+            print("Rating must be between 1 and 5.")
+            return
+
+        comment = self._get_input("Comment (optional): ")
+
+        try:
+            review = self._call(
+                self.review_service,
+                ["add_review", "create_review"],
+                user_id,
+                book_id,
+                rating,
+                comment,
+            )
+        except TypeError:
+            review = self._call(
+                self.review_service,
+                ["add_review", "create_review"],
+                user_id=user_id,
+                book_id=book_id,
+                rating=rating,
+                comment=comment,
+            )
+
+        if review:
+            print("Review added successfully.")
+        else:
+            print("Failed to add review.")
+
+    def view_book_reviews(self) -> None:
+        book_id = self._prompt_int("Book ID to view reviews: ", min_value=1)
+
+        try:
+            reviews = self._call(
+                self.review_service,
+                ["get_book_reviews", "book_reviews"],
+                book_id,
+            )
+        except TypeError:
+            reviews = self._call(
+                self.review_service,
+                ["get_book_reviews", "book_reviews"],
+                book_id=book_id,
+            )
+
+        reviews = list(reviews)
+        if not reviews:
+            print("No reviews found for this book.")
+            return
+
+        # Get average rating
+        try:
+            avg_rating = self._call(
+                self.review_service,
+                ["get_book_average_rating", "average_rating"],
+                book_id,
+            )
+        except (ServiceNotReadyError, TypeError):
+            avg_rating = None
+
+        print(f"\nReviews for Book ID {book_id}:")
+        if avg_rating:
+            print(f"Average Rating: {avg_rating:.1f}/5")
+        print("-" * 40)
+
+        for review in reviews:
+            r = self._to_dict(review)
+            stars = "*" * self._get_field(r, "rating", default=0)
+            print(f"  User {self._get_field(r, 'user_id')}: {stars}")
+            comment = self._get_field(r, "comment", default="")
+            if comment and comment != "-":
+                print(f"    \"{comment}\"")
+
+    def my_current_borrows(self) -> None:
+        user_id = self._get_current_user_id()
+
+        try:
+            records = self._call(
+                self.library_service,
+                ["get_user_active_borrows", "active_borrows", "current_borrows"],
+                user_id,
+            )
+        except TypeError:
+            records = self._call(
+                self.library_service,
+                ["get_user_active_borrows", "active_borrows", "current_borrows"],
+                user_id=user_id,
+            )
+
+        records = list(records)
+        if not records:
+            print("You have no books currently borrowed.")
+            return
+
+        print(f"\nCurrently Borrowed Books ({len(records)}/3 limit):")
+        for record in records:
+            r = self._to_dict(record)
+            print(
+                f"- Book ID: {self._get_field(r, 'book_id')} | "
+                f"Borrowed: {self._get_field(r, 'borrowed_at')}"
+            )
+
     def user_menu(self) -> None:
         while self.current_user is not None:
             print("\n=== User Menu ===")
@@ -387,8 +497,11 @@ class LibBuddyCLI:
             print("2. Search books")
             print("3. Borrow book")
             print("4. Return book")
-            print("5. My borrow history")
-            print("6. Logout")
+            print("5. My current borrows")
+            print("6. My borrow history")
+            print("7. Add review")
+            print("8. View book reviews")
+            print("9. Logout")
 
             choice = self._get_input("Choose an option: ")
 
@@ -402,8 +515,14 @@ class LibBuddyCLI:
                 elif choice == "4":
                     self.return_book()
                 elif choice == "5":
-                    self.my_history()
+                    self.my_current_borrows()
                 elif choice == "6":
+                    self.my_history()
+                elif choice == "7":
+                    self.add_review()
+                elif choice == "8":
+                    self.view_book_reviews()
+                elif choice == "9":
                     self.logout()
                     return
                 else:
@@ -414,27 +533,33 @@ class LibBuddyCLI:
     def admin_menu(self) -> None:
         while self.current_user is not None:
             print("\n=== Admin Menu ===")
-            print("1. Add book")
-            print("2. Update book copies")
-            print("3. Delete book")
-            print("4. View all borrow records")
-            print("5. List all users")
-            print("6. Logout")
+            print("1. List books")
+            print("2. Add book")
+            print("3. Update book copies")
+            print("4. Delete book")
+            print("5. View all borrow records")
+            print("6. List all users")
+            print("7. View book reviews")
+            print("8. Logout")
 
             choice = self._get_input("Choose an option: ")
 
             try:
                 if choice == "1":
-                    self.add_book()
+                    self.list_books()
                 elif choice == "2":
-                    self.update_book_copies()
+                    self.add_book()
                 elif choice == "3":
-                    self.delete_book()
+                    self.update_book_copies()
                 elif choice == "4":
-                    self.view_all_records()
+                    self.delete_book()
                 elif choice == "5":
-                    self.list_users()
+                    self.view_all_records()
                 elif choice == "6":
+                    self.list_users()
+                elif choice == "7":
+                    self.view_book_reviews()
+                elif choice == "8":
                     self.logout()
                     return
                 else:

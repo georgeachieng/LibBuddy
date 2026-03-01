@@ -82,4 +82,3 @@ class JSONStore:
         if not data:
             return 1
         return max((item.get("id", 0) for item in data), default=0) + 1
-

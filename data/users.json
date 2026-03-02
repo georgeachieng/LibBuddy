@@ -1,1 +1,29 @@
-//write code here
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "role": "admin",
+        "salt": "1bf8c156aa53f9efa7dfef9cb5e751b5",
+        "password_hash": "d7c9910438218b85ec59f793661102486c07c36d413550df7b18230166b815ad",
+        "created_at": "2026-03-03T00:05:12"
+    },
+    {
+        "id": 2,
+        "name": "Jane Doe",
+        "email": "jane@example.com",
+        "role": "user",
+        "salt": "ee74500dc506d36701734e2e504189d6",
+        "password_hash": "a469c4a1aba82ed94b7b620f2d7cdf89ca85368a2a4713d3b0ef4cc617f44613",
+        "created_at": "2026-03-03T00:05:42"
+    },
+    {
+        "id": 3,
+        "name": "Alice Smith",
+        "email": "alice@test.com",
+        "role": "user",
+        "salt": "794510a82b3235a098a60471a414d831",
+        "password_hash": "b1ca2ffdb1eed4a0abec8539dc369894703af79704f08cdf2c7564d9e6f718ae",
+        "created_at": "2026-03-03T00:08:30"
+    }
+]

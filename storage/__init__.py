@@ -1,9 +1,5 @@
-# storage/__init__.py
+"""Storage package for LibBuddy."""
 
 from .json_store import JSONStore
 
 __all__ = ["JSONStore"]
-
-
-
-#wrote the  code here

@@ -1,1 +1,25 @@
 # LibBuddy Project
+libbuddy/
+  main.py
+  README.md
+  requirements.txt
+  data/
+    users.json
+    books.json
+    borrow_records.json
+    reviews.json
+  models/
+    person.py
+    user.py
+    book.py
+    borrow_record.py
+    review.py
+  services/
+    auth_service.py
+    library_service.py
+    review_service.py
+  storage/
+    json_store.py
+  utils/
+    decorators.py
+    validators.py

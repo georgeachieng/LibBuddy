@@ -1,1 +1,10 @@
-//write code here
+[
+    {
+        "user_id": 2,
+        "book_id": 1,
+        "borrowed_at": "2026-03-03T00:06:33.355053",
+        "returned_at": "2026-03-03T00:06:43.871618",
+        "status": "returned",
+        "id": 1
+    }
+]

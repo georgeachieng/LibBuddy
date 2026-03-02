@@ -1,1 +1,18 @@
-//write code here
+[
+    {
+        "title": "Test Book",
+        "author": "Test Author",
+        "isbn": "123456789",
+        "total_copies": 5,
+        "available_copies": 5,
+        "id": 1
+    },
+    {
+        "title": "Advanced Python",
+        "author": "Guido van Rossum",
+        "isbn": "987654321",
+        "total_copies": 3,
+        "available_copies": 3,
+        "id": 2
+    }
+]

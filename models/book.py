@@ -1,6 +1,6 @@
-<<<<<<< HEAD
+
 #write code here
-=======
+
 # models/book.py
 
 class Book:
@@ -31,4 +31,8 @@ class Book:
         if self._available_copies >= self.total_copies:
             raise ValueError("All copies are already returned.")
         self._available_copies += 1
->>>>>>> 7d9e6de (Person/User inheritance,Book + BorrowRecord,properties/setters validation)
+
+
+
+
+        #wrote the  code here

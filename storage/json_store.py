@@ -1,6 +1,6 @@
-<<<<<<< HEAD
+
 #write code here
-=======
+
 # storage/json_store.py
 
 import json
@@ -77,4 +77,10 @@ class JSONStore:
         if not data:
             return 1
         return max(item["id"] for item in data) + 1
->>>>>>> 7d9e6de (Person/User inheritance,Book + BorrowRecord,properties/setters validation)
+
+
+
+
+
+        #wrote the  code here
+

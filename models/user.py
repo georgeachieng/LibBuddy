@@ -1,6 +1,6 @@
-<<<<<<< HEAD
+
 #write code here
-=======
+
 # models/user.py
 
 import os
@@ -41,4 +41,10 @@ class User(Person):
         if value not in ["user", "admin"]:
             raise ValueError("Role must be 'user' or 'admin'.")
         self._role = value
->>>>>>> 7d9e6de (Person/User inheritance,Book + BorrowRecord,properties/setters validation)
+
+
+
+
+
+        #wrote the  code here
+

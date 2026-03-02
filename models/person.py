@@ -1,6 +1,5 @@
-<<<<<<< HEAD
+
 #write code here
-=======
 # models/person.py
 
 class Person:
@@ -28,4 +27,11 @@ class Person:
         if "@" not in value or "." not in value:
             raise ValueError("Invalid email format.")
         self._email = value
->>>>>>> 7d9e6de (Person/User inheritance,Book + BorrowRecord,properties/setters validation)
+
+
+
+
+
+
+        #wrote the  code here
+

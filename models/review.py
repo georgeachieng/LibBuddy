@@ -1,6 +1,6 @@
-<<<<<<< HEAD
+
 #write code here
-=======
+
 # models/review.py
 
 from datetime import datetime
@@ -37,4 +37,11 @@ class Review:
         if len(value) > 500:
             raise ValueError("Comment cannot exceed 500 characters.")
         self._comment = value.strip()
->>>>>>> 7d9e6de (Person/User inheritance,Book + BorrowRecord,properties/setters validation)
+
+
+
+
+
+
+        #wrote the  code here
+

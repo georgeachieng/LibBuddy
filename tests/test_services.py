@@ -46,6 +46,22 @@ class AuthServiceTests(ServiceTestCase):
         with self.assertRaises(ValueError):
             service.register("Another", "ashanti@example.com", "different123")
 
+    def test_login_accepts_username_as_identifier(self):
+        service = AuthService()
+        created_user = service.register(
+            "Ashanti",
+            "ashanti@example.com",
+            "secret123",
+            username="ashanti",
+        )
+
+        logged_in_user = service.login("ashanti", "secret123")
+
+        # Username login is part of the smoother CLI flow now, so it stays tested.
+        # Delete this and that nicer auth path can break quietly.
+        self.assertEqual(logged_in_user["id"], created_user["id"])
+        self.assertEqual(logged_in_user["username"], "ashanti")
+
 
 class LibraryServiceTests(ServiceTestCase):
     def test_add_and_search_books(self):
@@ -150,6 +166,23 @@ class ReviewServiceTests(ServiceTestCase):
         self.assertEqual(len(reviews), 2)
         self.assertEqual(reviews[0]["comment"], "Excellent")
         self.assertEqual(average, 4.0)
+
+    def test_list_recent_reviews_returns_latest_first(self):
+        library_service = LibraryService()
+        service = ReviewService()
+        first_book = library_service.add_book("Clean Code", "Robert C. Martin", "9780132350884", 1)
+        second_book = library_service.add_book("Refactoring", "Martin Fowler", "9780201485677", 1)
+        library_service.borrow_book(user_id=1, book_id=first_book["id"])
+        library_service.borrow_book(user_id=2, book_id=second_book["id"])
+        service.add_review(1, first_book["id"], 4, "First")
+        service.add_review(2, second_book["id"], 5, "Second")
+
+        recent = service.list_recent_reviews()
+
+        # Admin review screens depend on this staying newest-first.
+        # Delete it and the moderation view gets noisy and less useful.
+        self.assertEqual(recent[0]["comment"], "Second")
+        self.assertEqual(recent[1]["comment"], "First")
 
     def test_adding_second_review_for_same_user_updates_existing_review(self):
         library_service = LibraryService()

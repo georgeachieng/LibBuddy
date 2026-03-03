@@ -52,12 +52,20 @@ class AuthService:
 
     # Registration validates input, enforces uniqueness, and writes a new user record.
     # Delete it and there is no supported path for new accounts.
-    def register(self, name: str, email: str, password: str, role: str = "user") -> Dict[str, Any]:
+    def register(
+        self,
+        name: str,
+        email: str,
+        password: str,
+        role: str = "user",
+        username: str | None = None,
+    ) -> Dict[str, Any]:
         # Trim and validate early so the JSON layer only gets sane input.
         # Remove these and weird whitespace or blanks leak into stored users.
         name = require_non_empty(name, "Name")
         email = require_non_empty(email, "Email").lower()
         password = require_non_empty(password, "Password")
+        username = require_non_empty(username, "Username").lower() if username else email.split("@", 1)[0]
 
         # Email format check stops obvious junk before persistence.
         # Delete it and your user data gets messy fast.
@@ -72,6 +80,11 @@ class AuthService:
         # Delete this and auth becomes ambiguous in the worst possible way.
         if any(u["email"].lower() == email for u in users):
             raise ValueError("Email already registered.")
+
+        # Username uniqueness keeps display names usable for login and review labels.
+        # Delete this and user identity gets confusing fast.
+        if any(u.get("username", "").lower() == username for u in users):
+            raise ValueError("Username already taken.")
 
         # First user becomes admin so the app is not born with zero admins.
         # Delete this and nobody may be able to manage the system cleanly.
@@ -101,6 +114,7 @@ class AuthService:
         new_user = {
             "id": self.users_store._generate_id(users),
             "name": name,
+            "username": username,
             "email": email,
             "role": role,
             "salt": salt,
@@ -118,7 +132,7 @@ class AuthService:
     def login(self, email: str, password: str) -> Optional[Dict[str, Any]]:
         # Same validation story as register: catch junk before business logic.
         # Remove this and auth errors get noisier and less predictable.
-        email = require_non_empty(email, "Email").lower()
+        identifier = require_non_empty(email, "Email or username").lower()
         password = require_non_empty(password, "Password")
 
         # Read user list fresh so login sees the current file state.
@@ -127,10 +141,16 @@ class AuthService:
 
         # next(..., None) gives us a clean "not found" path instead of a crash.
         # Delete the default and bad emails raise StopIteration like a gremlin.
-        user = next((u for u in users if u["email"].lower() == email), None)
+        user = next(
+            (
+                u for u in users
+                if u["email"].lower() == identifier or u.get("username", "").lower() == identifier
+            ),
+            None,
+        )
 
         if not user:
-            raise ValueError("No user found with that email.")
+            raise ValueError("No user found with that email or username.")
 
         # Password verification is the whole point of login.
         # Delete it and any password works, which is obviously game over.

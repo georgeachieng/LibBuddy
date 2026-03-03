@@ -142,7 +142,22 @@ class ReviewService:
         total_rating = sum(r.get("rating", 0) for r in reviews)
         return total_rating / len(reviews)
 
+    # These aliases smooth over CLI naming differences and keep average display working.
+    # Delete them and the review UI loses the summary number again.
+    def get_book_average_rating(self, book_id: int) -> Optional[float]:
+        return self.get_book_rating(book_id)
+
+    def average_rating(self, book_id: int) -> Optional[float]:
+        return self.get_book_rating(book_id)
+
     # Full review dump mainly helps admin/debug flows.
     # Delete it and global review inspection disappears.
     def list_all_reviews(self) -> List[Dict[str, Any]]:
         return self.reviews_store.all()
+
+    # Recent-first review list keeps admin moderation and summary screens short.
+    # Delete it and every caller has to sort and slice manually again.
+    def list_recent_reviews(self, limit: int = 10) -> List[Dict[str, Any]]:
+        reviews = self.reviews_store.all()
+        reviews.sort(key=lambda review: review.get("created_at", ""), reverse=True)
+        return reviews[:limit]

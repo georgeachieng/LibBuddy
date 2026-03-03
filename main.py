@@ -2,8 +2,10 @@ from __future__ import annotations
 
 # These imports power the CLI's "work with whatever teammate code exists" trick.
 # Kill them and the app either stops normalizing objects or straight-up fails to load services.
+from datetime import datetime
 from dataclasses import asdict, is_dataclass
 from importlib import import_module
+from textwrap import shorten
 from typing import Any
 
 from utils.decorators import login_required, role_required
@@ -159,6 +161,84 @@ class LibBuddyCLI:
         role = str(self._get_field(user_dict, "role", default="user")).lower()
         return role
 
+    # This keeps timestamps readable instead of dumping raw ISO strings everywhere.
+    # Delete it and the CLI goes back to looking like a log file.
+    @staticmethod
+    def _format_timestamp(value: Any) -> str:
+        if not value or value == "-":
+            return "-"
+        try:
+            return datetime.fromisoformat(str(value)).strftime("%Y-%m-%d %H:%M")
+        except ValueError:
+            return str(value)
+
+    # Book title lookup makes the UI human-readable instead of ID-only survival mode.
+    # Delete it and the user keeps translating book IDs in their head like a machine.
+    def _get_book_label(self, book_id: Any) -> str:
+        try:
+            book = self._call(self.library_service, ["get_book", "get_book_status"], int(book_id))
+        except (ServiceNotReadyError, TypeError, ValueError):
+            book = None
+
+        if book:
+            book_dict = self._to_dict(book)
+            title = self._get_field(book_dict, "title")
+            return shorten(str(title), width=32, placeholder="...")
+
+        return f"Book {book_id}"
+
+    # User labels make review and admin screens feel like people are using them, not just IDs.
+    # Delete it and the CLI keeps outputting anonymous number soup.
+    def _get_user_label(self, user_id: Any) -> str:
+        try:
+            user = self._call(self.auth_service, ["get_user_by_id"], int(user_id))
+        except (ServiceNotReadyError, TypeError, ValueError):
+            user = None
+
+        if user:
+            user_dict = self._to_dict(user)
+            username = self._get_field(user_dict, "username", default="")
+            if username and username != "-":
+                return str(username)
+            return str(self._get_field(user_dict, "name"))
+
+        return f"user-{user_id}"
+
+    # Review prompts are nicer when users can see which books they actually touched.
+    # Delete it and review entry goes back to guessing IDs from memory.
+    def _get_reviewable_book_ids(self, user_id: Any) -> list[int]:
+        try:
+            records = self._call(
+                self.library_service,
+                ["my_borrow_history", "get_user_history", "user_borrow_records"],
+                user_id,
+            )
+        except TypeError:
+            records = self._call(
+                self.library_service,
+                ["my_borrow_history", "get_user_history", "user_borrow_records"],
+                user_id=user_id,
+            )
+
+        seen: set[int] = set()
+        reviewable: list[int] = []
+        for record in list(records):
+            record_dict = self._to_dict(record)
+            book_id = self._get_field(record_dict, "book_id", default=None)
+            if isinstance(book_id, int) and book_id not in seen:
+                seen.add(book_id)
+                reviewable.append(book_id)
+
+        return reviewable
+
+    # One tiny helper keeps menus compact without making them cryptic.
+    # Delete it and the CLI goes back to repeating the same print boilerplate everywhere.
+    def _show_menu(self, title: str, options: list[str]) -> str:
+        print(f"\n=== {title} ===")
+        for index, option in enumerate(options, start=1):
+            print(f"{index}. {option}")
+        return self._get_input("Choose an option: ")
+
     # This handles all book list output in one place.
     # Delete it and every book-printing path grows its own messy formatting logic.
     def _print_books(self, books: list[Any]) -> None:
@@ -174,10 +254,11 @@ class LibBuddyCLI:
             # Delete this and object-based responses stop printing correctly.
             b = self._to_dict(book)
             print(
-                f"- ID: {self._get_field(b, 'id', 'book_id')} | "
-                f"{self._get_field(b, 'title')} by {self._get_field(b, 'author')} | "
+                f"- [{self._get_field(b, 'id', 'book_id')}] "
+                f"{shorten(str(self._get_field(b, 'title')), width=32, placeholder='...')} | "
+                f"{shorten(str(self._get_field(b, 'author')), width=20, placeholder='...')} | "
                 f"ISBN: {self._get_field(b, 'isbn')} | "
-                f"Available: {self._get_field(b, 'available_copies')}"
+                f"Available: {self._get_field(b, 'available_copies')}/{self._get_field(b, 'total_copies')}"
             )
 
     # Same deal as books, but for borrow history and admin record views.
@@ -193,12 +274,12 @@ class LibBuddyCLI:
             # Delete this and mixed return types become a runtime headache.
             r = self._to_dict(record)
             print(
-                f"- Record ID: {self._get_field(r, 'id', 'record_id')} | "
-                f"User: {self._get_field(r, 'user_id')} | "
-                f"Book: {self._get_field(r, 'book_id')} | "
+                f"- #{self._get_field(r, 'id', 'record_id')} | "
+                f"User: {self._get_user_label(self._get_field(r, 'user_id'))} | "
+                f"Book: {self._get_book_label(self._get_field(r, 'book_id'))} | "
                 f"Status: {self._get_field(r, 'status')} | "
-                f"Borrowed: {self._get_field(r, 'borrowed_at')} | "
-                f"Returned: {self._get_field(r, 'returned_at', default='-')}"
+                f"Borrowed: {self._format_timestamp(self._get_field(r, 'borrowed_at'))} | "
+                f"Returned: {self._format_timestamp(self._get_field(r, 'returned_at', default='-'))}"
             )
 
     # Registration wires the CLI prompt layer to the auth service.
@@ -206,12 +287,13 @@ class LibBuddyCLI:
     def register(self) -> None:
         print("\n=== Register ===")
         name = self._get_input("Name: ")
+        username = self._get_input("Username: ")
         email = self._get_input("Email: ")
         password = self._get_input("Password: ")
 
         # Basic presence checks stop trash input before it reaches the service layer.
         # Remove this and you lean entirely on downstream exceptions for user-facing flow.
-        if not (name and email and password):
+        if not (name and username and email and password):
             print("All fields are required.")
             return
 
@@ -225,6 +307,7 @@ class LibBuddyCLI:
                 email=email,
                 password=password,
                 role="user",
+                username=username,
             )
         except TypeError:
             # Positional fallback keeps older service versions alive.
@@ -236,6 +319,9 @@ class LibBuddyCLI:
                 email,
                 password,
             )
+        except (PermissionError, ValueError) as exc:
+            print(exc)
+            return
 
         # This success branch is the only user feedback proving account creation worked.
         # Delete it and the CLI feels broken even when it succeeds.
@@ -248,7 +334,7 @@ class LibBuddyCLI:
     # Delete it and the rest of the app is basically decorative.
     def login(self) -> None:
         print("\n=== Login ===")
-        email = self._get_input("Email: ")
+        email = self._get_input("Email or username: ")
         password = self._get_input("Password: ")
 
         if not (email and password):
@@ -273,6 +359,9 @@ class LibBuddyCLI:
                 email,
                 password,
             )
+        except ValueError as exc:
+            print(exc)
+            return
 
         # This protects the session from being set to garbage on failed auth.
         # Remove it and failed logins can still mutate app state.
@@ -283,7 +372,7 @@ class LibBuddyCLI:
         # This is the actual session handoff.
         # Delete it and every post-login feature thinks nobody is logged in.
         self.current_user = user
-        print("Login successful.")
+        print(f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}.")
 
     # Logout clears both the service session and the CLI session.
     # Delete it and users can get stuck "logged in" until restart.
@@ -529,6 +618,7 @@ class LibBuddyCLI:
         for user in users:
             print(
                 f"- ID: {self._get_field(user, 'id', 'user_id')} | "
+                f"Username: {self._get_field(user, 'username')} | "
                 f"Name: {self._get_field(user, 'name')} | "
                 f"Email: {self._get_field(user, 'email')} | "
                 f"Role: {self._get_field(user, 'role')}"
@@ -540,7 +630,21 @@ class LibBuddyCLI:
     def add_review(self) -> None:
         print("\n=== Add Review ===")
         user_id = self._get_current_user_id()
+        reviewable_book_ids = self._get_reviewable_book_ids(user_id)
+
+        if not reviewable_book_ids:
+            print("Borrow a book first, then come back and rate it.")
+            return
+
+        print("Books you can review:")
+        for book_id in reviewable_book_ids:
+            print(f"- [{book_id}] {self._get_book_label(book_id)}")
+
         book_id = self._prompt_int("Book ID to review: ", min_value=1)
+        if book_id not in reviewable_book_ids:
+            print("Pick a book from your borrowing history.")
+            return
+
         rating = self._prompt_int("Rating (1-5): ", min_value=1)
 
         # _prompt_int only checks the floor, so this upper bound still matters.
@@ -569,6 +673,9 @@ class LibBuddyCLI:
                 rating=rating,
                 comment=comment,
             )
+        except (PermissionError, ValueError) as exc:
+            print(exc)
+            return
 
         if review:
             print("Review added successfully.")
@@ -611,18 +718,23 @@ class LibBuddyCLI:
             # Remove the guard and older branches crash on read.
             avg_rating = None
 
-        print(f"\nReviews for Book ID {book_id}:")
+        print(f"\nReviews for {self._get_book_label(book_id)}:")
         if avg_rating:
             print(f"Average Rating: {avg_rating:.1f}/5")
         print("-" * 40)
 
+        reviews.sort(key=lambda review: self._get_field(self._to_dict(review), "created_at", default=""), reverse=True)
         for review in reviews:
             r = self._to_dict(review)
 
             # Stars make ratings readable in one glance.
             # Delete this and output gets more sterile and harder to scan.
             stars = "*" * self._get_field(r, "rating", default=0)
-            print(f"  User {self._get_field(r, 'user_id')}: {stars}")
+            print(
+                f"  {self._get_user_label(self._get_field(r, 'user_id'))} | "
+                f"{stars} ({self._get_field(r, 'rating')}/5) | "
+                f"{self._format_timestamp(self._get_field(r, 'created_at', default='-'))}"
+            )
 
             # Comments stay optional so blank reviews do not print ugly filler.
             # Delete the guard and you get meaningless quote lines everywhere.
@@ -658,26 +770,95 @@ class LibBuddyCLI:
         for record in records:
             r = self._to_dict(record)
             print(
-                f"- Book ID: {self._get_field(r, 'book_id')} | "
-                f"Borrowed: {self._get_field(r, 'borrowed_at')}"
+                f"- {self._get_book_label(self._get_field(r, 'book_id'))} | "
+                f"Borrowed: {self._format_timestamp(self._get_field(r, 'borrowed_at'))}"
             )
+
+    # This keeps review actions out of the main user menu so it feels less bloated.
+    # Delete it and the user menu goes back to being a long grocery list.
+    def reviews_menu(self) -> None:
+        while self.current_user is not None:
+            choice = self._show_menu("Reviews", ["Add or update review", "View book reviews", "Back"])
+
+            if choice == "1":
+                self.add_review()
+            elif choice == "2":
+                self.view_book_reviews()
+            elif choice == "3":
+                return
+            else:
+                print("Invalid option. Try again.")
+
+    # This gives users one place for active loans and history instead of crowding the main menu.
+    # Delete it and the user menu gets longer again for no good reason.
+    def my_books_menu(self) -> None:
+        while self.current_user is not None:
+            choice = self._show_menu("My Books", ["Current borrows", "Borrow history", "Back"])
+
+            if choice == "1":
+                self.my_current_borrows()
+            elif choice == "2":
+                self.my_history()
+            elif choice == "3":
+                return
+            else:
+                print("Invalid option. Try again.")
+
+    # Admin catalog actions are grouped here so the main admin screen stays short.
+    # Delete it and admin flow goes back to dumping every action at once.
+    def catalog_menu(self) -> None:
+        while self.current_user is not None:
+            choice = self._show_menu("Catalog", ["Browse books", "Add book", "Update copies", "Delete book", "Back"])
+
+            if choice == "1":
+                self.list_books()
+            elif choice == "2":
+                self.add_book()
+            elif choice == "3":
+                self.update_book_copies()
+            elif choice == "4":
+                self.delete_book()
+            elif choice == "5":
+                return
+            else:
+                print("Invalid option. Try again.")
+
+    # This gives admins a quick review overview instead of forcing book-by-book digging.
+    # Delete it and review moderation stays awkward.
+    @role_required("admin")
+    def view_recent_reviews(self) -> None:
+        try:
+            reviews = self._call(self.review_service, ["list_recent_reviews"], 10)
+        except ServiceNotReadyError:
+            reviews = self._call(self.review_service, ["list_all_reviews", "all_reviews"])
+            reviews = sorted(
+                list(reviews),
+                key=lambda review: self._get_field(self._to_dict(review), "created_at", default=""),
+                reverse=True,
+            )[:10]
+
+        if not reviews:
+            print("No reviews found.")
+            return
+
+        print("\nRecent Reviews:")
+        for review in reviews[:10]:
+            r = self._to_dict(review)
+            print(
+                f"- {self._get_book_label(self._get_field(r, 'book_id'))} | "
+                f"{self._get_user_label(self._get_field(r, 'user_id'))} | "
+                f"{self._get_field(r, 'rating')}/5 | "
+                f"{self._format_timestamp(self._get_field(r, 'created_at', default='-'))}"
+            )
+            comment = self._get_field(r, "comment", default="")
+            if comment and comment != "-":
+                print(f"  \"{comment}\"")
 
     # User menu keeps looping until logout.
     # Delete this and regular users have nowhere to actually use the app.
     def user_menu(self) -> None:
         while self.current_user is not None:
-            print("\n=== User Menu ===")
-            print("1. List books")
-            print("2. Search books")
-            print("3. Borrow book")
-            print("4. Return book")
-            print("5. My current borrows")
-            print("6. My borrow history")
-            print("7. Add review")
-            print("8. View book reviews")
-            print("9. Logout")
-
-            choice = self._get_input("Choose an option: ")
+            choice = self._show_menu("Member Menu", ["Browse books", "Search books", "Borrow", "Return", "My books", "Reviews", "Logout"])
 
             try:
                 # This ladder is boring on purpose: explicit beats clever in CLI menus.
@@ -691,14 +872,10 @@ class LibBuddyCLI:
                 elif choice == "4":
                     self.return_book()
                 elif choice == "5":
-                    self.my_current_borrows()
+                    self.my_books_menu()
                 elif choice == "6":
-                    self.my_history()
+                    self.reviews_menu()
                 elif choice == "7":
-                    self.add_review()
-                elif choice == "8":
-                    self.view_book_reviews()
-                elif choice == "9":
                     self.logout()
                     return
                 else:
@@ -712,34 +889,18 @@ class LibBuddyCLI:
     # Delete it and admin users are basically just regular users with a fancy title.
     def admin_menu(self) -> None:
         while self.current_user is not None:
-            print("\n=== Admin Menu ===")
-            print("1. List books")
-            print("2. Add book")
-            print("3. Update book copies")
-            print("4. Delete book")
-            print("5. View all borrow records")
-            print("6. List all users")
-            print("7. View book reviews")
-            print("8. Logout")
-
-            choice = self._get_input("Choose an option: ")
+            choice = self._show_menu("Admin Menu", ["Catalog", "Members", "Borrow log", "Reviews", "Logout"])
 
             try:
                 if choice == "1":
-                    self.list_books()
+                    self.catalog_menu()
                 elif choice == "2":
-                    self.add_book()
-                elif choice == "3":
-                    self.update_book_copies()
-                elif choice == "4":
-                    self.delete_book()
-                elif choice == "5":
-                    self.view_all_records()
-                elif choice == "6":
                     self.list_users()
-                elif choice == "7":
-                    self.view_book_reviews()
-                elif choice == "8":
+                elif choice == "3":
+                    self.view_all_records()
+                elif choice == "4":
+                    self.view_recent_reviews()
+                elif choice == "5":
                     self.logout()
                     return
                 else:
@@ -751,12 +912,7 @@ class LibBuddyCLI:
     # Delete it and the CLI boots with no usable entry path.
     def run(self) -> None:
         while True:
-            print("\n=== Welcome to LibBuddy ===")
-            print("1. Register")
-            print("2. Login")
-            print("3. Exit")
-
-            choice = self._get_input("Choose an option: ")
+            choice = self._show_menu("Welcome to LibBuddy", ["Register", "Login", "Exit"])
 
             try:
                 if choice == "1":

@@ -8,6 +8,7 @@ LibBuddy is a Python CLI library system with:
 - review and rating support
 - Open Library search/import for quick catalog seeding
 - JSON file persistence
+- Optional `tabulate` support for cleaner table views when installed
 
 ## Project Structure
 

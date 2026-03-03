@@ -10,6 +10,15 @@ from typing import Any
 
 from utils.decorators import login_required, role_required
 
+try:
+    # If tabulate is around, use it for cleaner tables without hand-rolling more UI code.
+    # Delete this and the branch loses the easiest visual upgrade in the whole app.
+    from tabulate import tabulate
+except ImportError:  # pragma: no cover
+    # Fallback matters because the CLI still has to work on plain Python installs.
+    # Delete it and missing one optional package kills the app at import time.
+    tabulate = None
+
 
 # This custom error keeps setup issues separate from actual user mistakes.
 # Delete it and missing service code gets mixed in with random runtime junk.
@@ -246,6 +255,12 @@ class LibBuddyCLI:
     @staticmethod
     def _print_table(headers: list[str], rows: list[list[Any]]) -> None:
         if not rows:
+            return
+
+        # Use the nicer renderer when it's installed. Easy win, zero logic drama.
+        # Delete this and the interface stays more basic than it needs to be.
+        if tabulate is not None:
+            print(tabulate(rows, headers=headers, tablefmt="fancy_grid"))
             return
 
         normalized = [[str(cell) for cell in row] for row in rows]

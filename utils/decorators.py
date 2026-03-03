@@ -1,5 +1,3 @@
-
-#write code here
 from functools import wraps
 
 def login_required(func):

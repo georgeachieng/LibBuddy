@@ -1,5 +1,3 @@
-"""Utils package for LibBuddy."""
-
 from .validators import require_non_empty, is_valid_email, is_valid_isbn, validate_rating
 from .decorators import login_required, role_required
 

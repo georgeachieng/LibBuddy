@@ -1,8 +1,3 @@
-
-#write code here
-
-# models/user.py
-
 import os
 import hashlib
 from models.person import Person
@@ -46,5 +41,5 @@ class User(Person):
 
 
 
-        #wrote the  code here
+      
 

@@ -1,8 +1,3 @@
-"""DEPRECATED: This module is deprecated. Use storage.json_store.JSONStore instead.
-
-This file is kept for backward compatibility only. All code should import from storage.json_store.
-"""
-
 from storage.json_store import JSONStore
 
 __all__ = ["JSONStore"]
@@ -13,14 +8,12 @@ __all__ = ["JSONStore"]
         return []
 
 def save_list(filename, data):
-    """Writes a list of dictionaries to a JSON file."""
     _ensure_data_dir()
     path = get_file_path(filename)
     with open(path, 'w') as f:
         json.dump(data, f, indent=4)
 
 def generate_id(filename):
-    """Calculates the next available ID based on existing records."""
     data = load_list(filename)
     if not data:
         return 1

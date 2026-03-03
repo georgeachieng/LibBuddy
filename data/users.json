@@ -25,5 +25,14 @@
         "salt": "794510a82b3235a098a60471a414d831",
         "password_hash": "b1ca2ffdb1eed4a0abec8539dc369894703af79704f08cdf2c7564d9e6f718ae",
         "created_at": "2026-03-03T00:08:30"
+    },
+    {
+        "id": 4,
+        "name": "George",
+        "email": "fernandezgeorge555@gmail.com",
+        "role": "user",
+        "salt": "96110e6c689935d112ca6d45d231b71a",
+        "password_hash": "51688ded63396036e6e9c7dda519f772413bb9092d6bf027eee68e07fed2f63e",
+        "created_at": "2026-03-03T09:53:47"
     }
 ]

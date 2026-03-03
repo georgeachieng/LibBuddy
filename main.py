@@ -1,11 +1,3 @@
-"""LibBuddy CLI entrypoint.
-
-Person 4 scope:
-- Menu-driven CLI flow
-- Input validation
-- Calls into auth/library services
-"""
-
 from __future__ import annotations
 
 from dataclasses import asdict, is_dataclass
@@ -24,7 +16,7 @@ class LibBuddyCLI:
         self.current_user: Any = None
 
     def _load_service(self, module_path: str, class_name: str) -> Any:
-        """Load a service class if present, otherwise return the module as callable container."""
+
         try:
             module = import_module(module_path)
         except ImportError as exc:
@@ -37,7 +29,6 @@ class LibBuddyCLI:
             try:
                 return service_cls()
             except TypeError:
-                # Constructor may require deps in other branches; fall back to module-level API.
                 pass
 
         return module

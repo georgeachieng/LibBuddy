@@ -6,5 +6,13 @@
         "returned_at": "2026-03-03T00:06:43.871618",
         "status": "returned",
         "id": 1
+    },
+    {
+        "user_id": 4,
+        "book_id": 1,
+        "borrowed_at": "2026-03-03T10:02:52.564297",
+        "returned_at": "2026-03-03T10:02:59.669866",
+        "status": "returned",
+        "id": 2
     }
 ]

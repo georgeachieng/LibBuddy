@@ -103,6 +103,31 @@ class CLITests(unittest.TestCase):
         self.assertIn("Rating must be between 1 and 5.", output)
         review.add_review.assert_not_called()
 
+    def test_add_book_blocks_non_admin_user_before_prompting(self):
+        cli, _, library, _ = self.make_cli()
+        cli.current_user = {"id": 4, "role": "user"}
+
+        output = self.capture_output(cli.add_book)
+
+        # The decorator should stop the action before the service ever sees it.
+        # Delete these and role protection can quietly disappear.
+        self.assertIn("Access denied. Requires role: admin.", output)
+        library.add_book.assert_not_called()
+
+    def test_my_current_borrows_prints_active_record_count(self):
+        cli, _, library, _ = self.make_cli()
+        cli.current_user = {"id": 4, "role": "user"}
+        library.get_user_active_borrows.return_value = [
+            {"book_id": 12, "borrowed_at": "2026-03-03T11:00:00"}
+        ]
+
+        output = self.capture_output(cli.my_current_borrows)
+
+        # This proves the CLI can now render the active-borrow view instead of erroring out.
+        # Delete these and that user flow loses coverage again.
+        self.assertIn("Currently Borrowed Books (1/3 limit):", output)
+        self.assertIn("Book ID: 12", output)
+
 
 if __name__ == "__main__":
     unittest.main()

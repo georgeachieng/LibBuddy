@@ -7,11 +7,35 @@ from storage.json_store import JSONStore
 # This service owns catalog state plus borrow/return side effects.
 # Delete it and LibBuddy becomes a list of books with zero actual library behavior.
 class LibraryService:
+    # Borrow limit mirrors the project proposal and the CLI copy.
+    # Delete it and users can hoard books forever, which is not the policy we said we built.
+    BORROW_LIMIT = 3
+
     def __init__(self):
         # Separate stores keep book data and borrow data from stepping on each other.
         # Delete either one and you lose either catalog state or borrowing history.
         self.books_store = JSONStore("books.json")
         self.records_store = JSONStore("borrow_records.json")
+
+    # Active borrows are the real source of truth for limits and "currently borrowed" views.
+    # Delete it and those checks go back to copy-paste loops.
+    def get_user_active_borrows(self, user_id: int = None, **kwargs) -> List[Dict[str, Any]]:
+        if user_id is None:
+            user_id = kwargs.get("user_id")
+
+        records = self.records_store.all()
+        return [
+            r for r in records
+            if r.get("user_id") == user_id and r.get("status") == "borrowed"
+        ]
+
+    # These aliases keep the CLI compatibility layer from pretending this feature does not exist.
+    # Delete them and "current borrows" breaks again over naming nonsense.
+    def active_borrows(self, user_id: int = None, **kwargs) -> List[Dict[str, Any]]:
+        return self.get_user_active_borrows(user_id, **kwargs)
+
+    def current_borrows(self, user_id: int = None, **kwargs) -> List[Dict[str, Any]]:
+        return self.get_user_active_borrows(user_id, **kwargs)
 
     # Book creation validates catalog input before writing to storage.
     # Delete it and admins cannot grow the library.
@@ -123,11 +147,27 @@ class LibraryService:
         if book_id is None:
             book_id = kwargs.get("book_id")
 
+        # Missing ids mean the service cannot safely tie the action to a user or book.
+        # Delete this and you can write half-broken borrow records.
+        if user_id is None or book_id is None:
+            raise ValueError("Both user_id and book_id are required.")
+
         # Missing book should fail loudly and early.
         # Delete this and later logic crashes or writes bad records.
         book = self.books_store.find_by_id(book_id)
         if not book:
             raise ValueError(f"Book ID {book_id} not found.")
+
+        # Borrow limits are part of the project rules, not a nice-to-have.
+        # Delete this and the app stops matching the actual library policy we documented.
+        active_borrows = self.get_user_active_borrows(user_id=user_id)
+        if len(active_borrows) >= self.BORROW_LIMIT:
+            raise ValueError(f"Borrow limit reached. You can only borrow {self.BORROW_LIMIT} books at a time.")
+
+        # Duplicate active borrows for the same book make the history weird and the inventory fake.
+        # Delete this and one user can stack the same checkout record over and over.
+        if any(record.get("book_id") == book_id for record in active_borrows):
+            raise ValueError("You already have this book borrowed.")
 
         # This blocks borrowing ghost copies that do not exist.
         # Remove it and inventory can go negative.

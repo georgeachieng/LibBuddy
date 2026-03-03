@@ -6,6 +6,8 @@ from dataclasses import asdict, is_dataclass
 from importlib import import_module
 from typing import Any
 
+from utils.decorators import login_required, role_required
+
 
 # This custom error keeps setup issues separate from actual user mistakes.
 # Delete it and missing service code gets mixed in with random runtime junk.
@@ -333,6 +335,7 @@ class LibBuddyCLI:
 
     # Borrow flow ties the current user to a book id and hands off to services.
     # Delete it and the core library feature is gone. Bit of a problem for LibBuddy.
+    @login_required
     def borrow_book(self) -> None:
         user_id = self._get_current_user_id()
         book_id = self._prompt_int("Book ID to borrow: ", min_value=1)
@@ -361,6 +364,7 @@ class LibBuddyCLI:
 
     # Return flow mirrors borrow flow and is just as central.
     # Delete it and inventory only goes down forever. Cute bug, terrible app.
+    @login_required
     def return_book(self) -> None:
         user_id = self._get_current_user_id()
         book_id = self._prompt_int("Book ID to return: ", min_value=1)
@@ -387,6 +391,7 @@ class LibBuddyCLI:
 
     # History view gives users proof of their borrow activity.
     # Delete it and there is no audit trail in the CLI.
+    @login_required
     def my_history(self) -> None:
         user_id = self._get_current_user_id()
 
@@ -407,6 +412,7 @@ class LibBuddyCLI:
 
     # Admin-only book creation path.
     # Delete it and the catalog becomes read-only from the CLI.
+    @role_required("admin")
     def add_book(self) -> None:
         print("\n=== Add Book ===")
         title = self._get_input("Title: ")
@@ -450,6 +456,7 @@ class LibBuddyCLI:
 
     # Admin update for inventory counts.
     # Delete it and there is no way to fix stock numbers without editing data files by hand.
+    @role_required("admin")
     def update_book_copies(self) -> None:
         book_id = self._prompt_int("Book ID to update: ", min_value=1)
         total_copies = self._prompt_int("New total copies: ", min_value=0)
@@ -476,6 +483,7 @@ class LibBuddyCLI:
 
     # Admin delete path for books.
     # Delete it and bad catalog entries become immortal.
+    @role_required("admin")
     def delete_book(self) -> None:
         book_id = self._prompt_int("Book ID to delete: ", min_value=1)
 
@@ -495,6 +503,7 @@ class LibBuddyCLI:
 
     # Admin borrow-record view for the whole system.
     # Delete it and admins lose visibility into who borrowed what.
+    @role_required("admin")
     def view_all_records(self) -> None:
         records = self._call(
             self.library_service,
@@ -504,6 +513,7 @@ class LibBuddyCLI:
 
     # Admin user list view.
     # Delete it and there is no CLI visibility into account data.
+    @role_required("admin")
     def list_users(self) -> None:
         users = self._call(self.auth_service, ["list_users", "all_users", "get_all_users"])
 
@@ -526,6 +536,7 @@ class LibBuddyCLI:
 
     # Review creation is one of the user-facing extras that proves the app is more than CRUD.
     # Delete it and ratings become read-only fiction.
+    @login_required
     def add_review(self) -> None:
         print("\n=== Add Review ===")
         user_id = self._get_current_user_id()
@@ -621,6 +632,7 @@ class LibBuddyCLI:
 
     # This is the lightweight "what do I currently have out?" screen.
     # Delete it and users have history, but no quick active snapshot.
+    @login_required
     def my_current_borrows(self) -> None:
         user_id = self._get_current_user_id()
 

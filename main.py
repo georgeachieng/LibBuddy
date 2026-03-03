@@ -132,7 +132,7 @@ class LibBuddyCLI:
             except ValueError:
                 # This keeps bad input recoverable instead of fatal.
                 # Delete it and users get a traceback over typing "abc".
-                print("Please enter a valid number.")
+                print("Enter a valid number.")
 
     # This helper lets the CLI read mixed response shapes without caring about key naming drama.
     # Delete it and every print block gets duplicated fallback logic.
@@ -237,7 +237,7 @@ class LibBuddyCLI:
         print(f"\n=== {title} ===")
         for index, option in enumerate(options, start=1):
             print(f"{index}. {option}")
-        return self._get_input("Choose an option: ")
+        return self._get_input("Select an option: ")
 
     # This handles all book list output in one place.
     # Delete it and every book-printing path grows its own messy formatting logic.
@@ -294,7 +294,7 @@ class LibBuddyCLI:
         # Basic presence checks stop trash input before it reaches the service layer.
         # Remove this and you lean entirely on downstream exceptions for user-facing flow.
         if not (name and username and email and password):
-            print("All fields are required.")
+            print("Please fill in every field.")
             return
 
         try:
@@ -326,9 +326,9 @@ class LibBuddyCLI:
         # This success branch is the only user feedback proving account creation worked.
         # Delete it and the CLI feels broken even when it succeeds.
         if created:
-            print("Registration successful. You can now log in.")
+            print("Account created. You can log in now.")
         else:
-            print("Registration failed.")
+            print("Could not create the account.")
 
     # Login is the gate to every user and admin action.
     # Delete it and the rest of the app is basically decorative.
@@ -338,7 +338,7 @@ class LibBuddyCLI:
         password = self._get_input("Password: ")
 
         if not (email and password):
-            print("Email and password are required.")
+            print("Enter both your email or username and your password.")
             return
 
         try:
@@ -366,7 +366,7 @@ class LibBuddyCLI:
         # This protects the session from being set to garbage on failed auth.
         # Remove it and failed logins can still mutate app state.
         if not user:
-            print("Invalid credentials.")
+            print("Login failed. Check your details and try again.")
             return
 
         # This is the actual session handoff.
@@ -389,7 +389,7 @@ class LibBuddyCLI:
         # This local reset is the part menus actually care about.
         # Delete it and role-based loops keep running like nothing happened.
         self.current_user = None
-        print("Logged out.")
+        print("You have been logged out.")
 
     # Thin wrapper around book listing so menus stay readable.
     # Delete it and multiple menu options lose their book view.
@@ -402,7 +402,7 @@ class LibBuddyCLI:
     def search_books(self) -> None:
         query = self._get_input("Search by title/author: ")
         if not query:
-            print("Search query cannot be empty.")
+            print("Enter something to search for.")
             return
 
         try:
@@ -447,9 +447,9 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book borrowed successfully.")
+            print("Book borrowed.")
         else:
-            print("Could not borrow book.")
+            print("Could not borrow that book.")
 
     # Return flow mirrors borrow flow and is just as central.
     # Delete it and inventory only goes down forever. Cute bug, terrible app.
@@ -474,9 +474,9 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book returned successfully.")
+            print("Book returned.")
         else:
-            print("Could not return book.")
+            print("Could not return that book.")
 
     # History view gives users proof of their borrow activity.
     # Delete it and there is no audit trail in the CLI.
@@ -539,9 +539,9 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book added.")
+            print("Book added to the catalog.")
         else:
-            print("Failed to add book.")
+            print("Could not add the book.")
 
     # Admin update for inventory counts.
     # Delete it and there is no way to fix stock numbers without editing data files by hand.
@@ -568,7 +568,7 @@ class LibBuddyCLI:
         if ok:
             print("Book copies updated.")
         else:
-            print("Failed to update book copies.")
+            print("Could not update the copy count.")
 
     # Admin delete path for books.
     # Delete it and bad catalog entries become immortal.
@@ -586,9 +586,9 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book deleted.")
+            print("Book removed from the catalog.")
         else:
-            print("Failed to delete book.")
+            print("Could not delete that book.")
 
     # Admin borrow-record view for the whole system.
     # Delete it and admins lose visibility into who borrowed what.
@@ -633,16 +633,16 @@ class LibBuddyCLI:
         reviewable_book_ids = self._get_reviewable_book_ids(user_id)
 
         if not reviewable_book_ids:
-            print("Borrow a book first, then come back and rate it.")
+            print("You can only review books you have borrowed.")
             return
 
-        print("Books you can review:")
+        print("Your reviewable books:")
         for book_id in reviewable_book_ids:
             print(f"- [{book_id}] {self._get_book_label(book_id)}")
 
         book_id = self._prompt_int("Book ID to review: ", min_value=1)
         if book_id not in reviewable_book_ids:
-            print("Pick a book from your borrowing history.")
+            print("Choose a book from your borrowing history.")
             return
 
         rating = self._prompt_int("Rating (1-5): ", min_value=1)
@@ -678,9 +678,9 @@ class LibBuddyCLI:
             return
 
         if review:
-            print("Review added successfully.")
+            print("Review saved.")
         else:
-            print("Failed to add review.")
+            print("Could not save the review.")
 
     # This view prints all reviews for one book plus the average when possible.
     # Delete it and ratings exist in storage but users cannot really see them.
@@ -702,7 +702,7 @@ class LibBuddyCLI:
 
         reviews = list(reviews)
         if not reviews:
-            print("No reviews found for this book.")
+            print("No reviews yet for that book.")
             return
 
         try:
@@ -763,7 +763,7 @@ class LibBuddyCLI:
 
         records = list(records)
         if not records:
-            print("You have no books currently borrowed.")
+            print("You do not have any active borrows.")
             return
 
         print(f"\nCurrently Borrowed Books ({len(records)}/3 limit):")
@@ -778,7 +778,7 @@ class LibBuddyCLI:
     # Delete it and the user menu goes back to being a long grocery list.
     def reviews_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("Reviews", ["Add or update review", "View book reviews", "Back"])
+            choice = self._show_menu("Reviews", ["Write or update review", "View book reviews", "Back"])
 
             if choice == "1":
                 self.add_review()
@@ -808,7 +808,7 @@ class LibBuddyCLI:
     # Delete it and admin flow goes back to dumping every action at once.
     def catalog_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("Catalog", ["Browse books", "Add book", "Update copies", "Delete book", "Back"])
+            choice = self._show_menu("Catalog", ["Browse books", "Add book", "Update copies", "Remove book", "Back"])
 
             if choice == "1":
                 self.list_books()
@@ -883,13 +883,13 @@ class LibBuddyCLI:
             except (ServiceNotReadyError, ValueError) as exc:
                 # Catching here keeps one bad action from killing the whole menu session.
                 # Delete it and users get punted out by recoverable issues.
-                print(f"Action failed: {exc}")
+                print(f"Could not complete that action: {exc}")
 
     # Admin menu exposes catalog and user management actions.
     # Delete it and admin users are basically just regular users with a fancy title.
     def admin_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("Admin Menu", ["Catalog", "Members", "Borrow log", "Reviews", "Logout"])
+            choice = self._show_menu("Admin Menu", ["Catalog", "Users", "Borrow records", "Reviews", "Logout"])
 
             try:
                 if choice == "1":
@@ -906,7 +906,7 @@ class LibBuddyCLI:
                 else:
                     print("Invalid option. Try again.")
             except (ServiceNotReadyError, ValueError) as exc:
-                print(f"Action failed: {exc}")
+                print(f"Could not complete that action: {exc}")
 
     # Main app loop for the anonymous landing menu.
     # Delete it and the CLI boots with no usable entry path.
@@ -944,7 +944,7 @@ class LibBuddyCLI:
             except Exception as exc:  # noqa: BLE001
                 # Broad catch keeps the CLI from hard-crashing in class demos.
                 # Delete it and one unexpected bug kills the entire session.
-                print(f"Unexpected error: {exc}")
+                print(f"Something unexpected happened: {exc}")
 
 
 # Thin wrapper so tests and direct execution share the same entry path.

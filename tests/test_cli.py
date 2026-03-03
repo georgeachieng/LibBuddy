@@ -52,7 +52,7 @@ class CLITests(unittest.TestCase):
 
         # This proves the CLI blocks empty fields before touching auth.
         # Delete these and the guard can break silently.
-        self.assertIn("All fields are required.", output)
+        self.assertIn("Please fill in every field.", output)
         auth.register.assert_not_called()
 
     def test_login_sets_current_user_on_success(self):
@@ -150,8 +150,8 @@ class CLITests(unittest.TestCase):
 
         # Review flow should guide the user instead of letting random IDs through.
         # Delete this and the smoother review guard disappears.
-        self.assertIn("Books you can review:", output)
-        self.assertIn("Pick a book from your borrowing history.", output)
+        self.assertIn("Your reviewable books:", output)
+        self.assertIn("Choose a book from your borrowing history.", output)
         review.add_review.assert_not_called()
 
 

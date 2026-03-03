@@ -1,6 +1,6 @@
 # LibBuddy
 
-LibBuddy is a Python command-line library management system built for a group project.
+LibBuddy is a Python command-line library management system built as a group project.
 
 It supports:
 - user registration and login
@@ -12,7 +12,7 @@ It supports:
 
 ## Project Goal
 
-The project was built to demonstrate:
+This project was built to demonstrate:
 - object-oriented programming
 - modular Python structure
 - persistent data storage with JSON
@@ -97,7 +97,7 @@ LibBuddy/
     └── validators.py
 ```
 
-## How to Run
+## Running the App
 
 From the project root:
 
@@ -105,7 +105,7 @@ From the project root:
 python3 main.py
 ```
 
-## How to Run Tests
+## Running Tests
 
 From the project root:
 
@@ -136,7 +136,7 @@ Current test coverage includes:
 
 ## Data Notes
 
-- This app uses JSON files instead of a database.
+- This application uses JSON files instead of a database.
 - Data persists between runs unless the JSON files are manually edited or cleared.
 - Passwords are hashed before storage.
 
@@ -150,10 +150,10 @@ Current test coverage includes:
 
 ## Submission Notes
 
-This repo includes:
+This repository includes:
 - modular source code
 - persistent data files
 - automated tests
 - a working CLI entrypoint
 
-That covers the main project requirements without pretending the app is bigger than it is.
+This covers the core project requirements without overstating the scope of the system.

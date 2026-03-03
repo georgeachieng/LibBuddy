@@ -1,16 +1,52 @@
 [
-  {
-    "id": 1,
-    "name": "Admin User",
-    "email": "admin@libbuddy.com",
-    "password_hash": "240be518fabd2724ddb6f04eeb9d5f2d9c3bfb3e2a3e3a3e3a3e3a3e3a3e3a3e",
-    "role": "admin"
-  },
-  {
-    "id": 2,
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password_hash": "5e884898da28047d51db6f4c5db6e58e53bdacf7ddd0f89b0c6db2ae2e3b6a3c",
-    "role": "user"
-  }
+    {
+        "id": 1,
+        "name": "George Achieng",
+        "username": "georgeachieng",
+        "email": "admin@libbuddy.com",
+        "role": "admin",
+        "salt": "0ed0439e4ae4f2bc9780d8c12aeea126",
+        "password_hash": "96a45949a514d3e6beac9660f3c1f1c44200a276861ef4f29dec9965a7b33347",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 2,
+        "name": "John Doe",
+        "username": "johndoe",
+        "email": "john@example.com",
+        "role": "user",
+        "salt": "e3fd7fbbf4bab0d0bec9b78be6b9cd42",
+        "password_hash": "8db4915ac0c777a0b07741c4d7868272e0e7aa2ad221eebbc4b429415252b252",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 3,
+        "name": "Mary Wanjiku",
+        "username": "marywanjiku",
+        "email": "mary@example.com",
+        "role": "user",
+        "salt": "40ea3fe427d08cab0bd19f2bb2fbee60",
+        "password_hash": "364fb36801776396393bad7993507b17fb807326310492dcfebc374efde3ae2d",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 4,
+        "name": "Brian Otieno",
+        "username": "brianotieno",
+        "email": "brian@example.com",
+        "role": "user",
+        "salt": "9842195ffa848a40df09b4e4725c9b9f",
+        "password_hash": "7c337a5a5db52ff983935387862a8129ca1f2e9b28ef755976272dcc79fad746",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 5,
+        "name": "Aisha Hassan",
+        "username": "aishahassan",
+        "email": "aisha@example.com",
+        "role": "user",
+        "salt": "15d4217339950e24be6971690579191a",
+        "password_hash": "0d9cad57b63104bcf57fe5eb7c01181f7f6717577ef7583a4dd46908fa907799",
+        "created_at": "2026-03-03T16:00:00"
+    }
 ]

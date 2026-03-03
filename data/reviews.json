@@ -1,1 +1,82 @@
-[]
+[
+    {
+        "id": 1,
+        "user_id": 2,
+        "book_id": 1,
+        "rating": 5,
+        "comment": "Super clean and practical.",
+        "created_at": "2026-02-27T10:15:00"
+    },
+    {
+        "id": 2,
+        "user_id": 3,
+        "book_id": 2,
+        "rating": 4,
+        "comment": "Good read, straight to the point.",
+        "created_at": "2026-02-28T16:00:00"
+    },
+    {
+        "id": 3,
+        "user_id": 5,
+        "book_id": 5,
+        "rating": 5,
+        "comment": "Great for getting started fast.",
+        "created_at": "2026-02-26T09:30:00"
+    },
+    {
+        "id": 4,
+        "user_id": 2,
+        "book_id": 6,
+        "rating": 4,
+        "comment": "Saved me a lot of time honestly.",
+        "created_at": "2026-03-01T17:15:00"
+    },
+    {
+        "id": 5,
+        "user_id": 4,
+        "book_id": 8,
+        "rating": 4,
+        "comment": "Easy to follow and actually useful.",
+        "created_at": "2026-03-02T18:45:00"
+    },
+    {
+        "id": 6,
+        "user_id": 5,
+        "book_id": 9,
+        "rating": 3,
+        "comment": "Dense, but still worth it.",
+        "created_at": "2026-03-03T08:20:00"
+    },
+    {
+        "id": 7,
+        "user_id": 2,
+        "book_id": 10,
+        "rating": 5,
+        "comment": "Still one of the best pattern books.",
+        "created_at": "2026-03-01T11:40:00"
+    },
+    {
+        "id": 8,
+        "user_id": 3,
+        "book_id": 11,
+        "rating": 4,
+        "comment": "Solid Python advice, no fluff.",
+        "created_at": "2026-03-02T08:25:00"
+    },
+    {
+        "id": 9,
+        "user_id": 4,
+        "book_id": 12,
+        "rating": 5,
+        "comment": "Good prep book, very clear.",
+        "created_at": "2026-03-02T16:15:00"
+    },
+    {
+        "id": 10,
+        "user_id": 5,
+        "book_id": 13,
+        "rating": 4,
+        "comment": "Long title, good content.",
+        "created_at": "2026-03-03T09:30:00"
+    }
+]

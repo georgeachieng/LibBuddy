@@ -1,2 +1,3 @@
-# LibBuddy runs on the standard library right now.
-# If this file is removed, the repo stops matching the expected submission structure.
+# `tabulate` is the one extra package we use to make CLI tables readable.
+# If this line is removed, the repo stops matching the "external package usage" requirement cleanly.
+tabulate>=0.9,<1.0

@@ -87,7 +87,7 @@ Note:
 ## Requirements
 
 - Python 3.10+
-- no required third-party packages right now
+- `tabulate` for cleaner CLI tables
 - JSON files for persistence
 - `unittest` for automated testing
 
@@ -113,6 +113,15 @@ Current automated coverage includes:
 - model validation and behavior
 - auth, library, and review service rules
 - CLI input and output flow with mocks
+
+## External Package Usage
+
+LibBuddy uses `tabulate` to render cleaner table output for:
+- book listings
+- borrow records
+- user listings
+
+If the package is not installed yet, the CLI falls back to plain text output instead of crashing.
 
 ## Example Flow
 

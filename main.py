@@ -8,6 +8,15 @@ from typing import Any
 
 from utils.decorators import login_required, role_required
 
+try:
+    # `tabulate` is optional at runtime so the app can still boot in stripped environments.
+    # Delete the guard and missing local installs crash the CLI before the menu even shows up.
+    from tabulate import tabulate
+except ImportError:
+    # Fallback keeps the app usable even if dependencies were not installed yet.
+    # Delete this and one missing package kills the whole submission demo.
+    tabulate = None
+
 
 # This custom error keeps setup issues separate from actual user mistakes.
 # Delete it and missing service code gets mixed in with random runtime junk.
@@ -168,17 +177,34 @@ class LibBuddyCLI:
             print("No books found.")
             return
 
-        print("\nBooks:")
+        # Table rows make the list easier to scan once the catalog grows past two books.
+        # Delete this and the app drops back to long, noisy string lines.
+        rows = []
         for book in books:
             # Normalize each item before grabbing fields.
             # Delete this and object-based responses stop printing correctly.
             b = self._to_dict(book)
-            print(
-                f"- ID: {self._get_field(b, 'id', 'book_id')} | "
-                f"{self._get_field(b, 'title')} by {self._get_field(b, 'author')} | "
-                f"ISBN: {self._get_field(b, 'isbn')} | "
-                f"Available: {self._get_field(b, 'available_copies')}"
+            rows.append(
+                [
+                    self._get_field(b, "id", "book_id"),
+                    self._get_field(b, "title"),
+                    self._get_field(b, "author"),
+                    self._get_field(b, "isbn"),
+                    self._get_field(b, "available_copies"),
+                ]
             )
+
+        print("\nBooks:")
+        if tabulate is not None:
+            # Package path earns its keep here by making CLI output look less like a crash log.
+            # Delete this and the external package stops doing any real work.
+            print(tabulate(rows, headers=["ID", "Title", "Author", "ISBN", "Available"], tablefmt="github"))
+            return
+
+        # Fallback keeps local runs working even if `pip install -r requirements.txt` never happened.
+        # Delete it and missing dependencies become startup punishment.
+        for row in rows:
+            print(f"- ID: {row[0]} | {row[1]} by {row[2]} | ISBN: {row[3]} | Available: {row[4]}")
 
     # Same deal as books, but for borrow history and admin record views.
     # Remove it and record output turns into copy-paste soup.
@@ -187,18 +213,39 @@ class LibBuddyCLI:
             print("No borrow records found.")
             return
 
-        print("\nBorrow Records:")
+        rows = []
         for record in records:
             # Normalize the shape before field lookup so records from different branches still print.
             # Delete this and mixed return types become a runtime headache.
             r = self._to_dict(record)
+            rows.append(
+                [
+                    self._get_field(r, "id", "record_id"),
+                    self._get_field(r, "user_id"),
+                    self._get_field(r, "book_id"),
+                    self._get_field(r, "status"),
+                    self._get_field(r, "borrowed_at"),
+                    self._get_field(r, "returned_at", default="-"),
+                ]
+            )
+
+        print("\nBorrow Records:")
+        if tabulate is not None:
+            # This is where the package makes dense record history readable instead of annoying.
+            # Delete it and record screens go back to wall-of-text mode.
             print(
-                f"- Record ID: {self._get_field(r, 'id', 'record_id')} | "
-                f"User: {self._get_field(r, 'user_id')} | "
-                f"Book: {self._get_field(r, 'book_id')} | "
-                f"Status: {self._get_field(r, 'status')} | "
-                f"Borrowed: {self._get_field(r, 'borrowed_at')} | "
-                f"Returned: {self._get_field(r, 'returned_at', default='-')}"
+                tabulate(
+                    rows,
+                    headers=["Record ID", "User", "Book", "Status", "Borrowed", "Returned"],
+                    tablefmt="github",
+                )
+            )
+            return
+
+        for row in rows:
+            print(
+                f"- Record ID: {row[0]} | User: {row[1]} | Book: {row[2]} | "
+                f"Status: {row[3]} | Borrowed: {row[4]} | Returned: {row[5]}"
             )
 
     # Registration wires the CLI prompt layer to the auth service.
@@ -526,6 +573,26 @@ class LibBuddyCLI:
             return
 
         print("\nUsers:")
+        if tabulate is not None:
+            # Admin user lists get way easier to scan once the package formats them as a table.
+            # Delete this and the extra dependency stops adding visible value here too.
+            print(
+                tabulate(
+                    [
+                        [
+                            self._get_field(user, "id", "user_id"),
+                            self._get_field(user, "name"),
+                            self._get_field(user, "email"),
+                            self._get_field(user, "role"),
+                        ]
+                        for user in users
+                    ],
+                    headers=["ID", "Name", "Email", "Role"],
+                    tablefmt="github",
+                )
+            )
+            return
+
         for user in users:
             print(
                 f"- ID: {self._get_field(user, 'id', 'user_id')} | "

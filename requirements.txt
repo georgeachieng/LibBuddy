@@ -1,3 +1,1 @@
-# `tabulate` is the one extra package we use to make CLI tables readable.
-# If this line is removed, the repo stops matching the "external package usage" requirement cleanly.
 tabulate>=0.9,<1.0

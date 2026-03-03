@@ -1,7 +1,5 @@
 import unittest
 
-# These imports are the contract the model layer is supposed to keep working.
-# If one breaks, the tests fail early instead of pretending everything is fine.
 from models.book import Book
 from models.borrow_record import BorrowRecord
 from models.person import Person
@@ -9,20 +7,14 @@ from models.review import Review
 from models.user import User
 
 
-# Model tests lock down the validation rules that are easiest to break casually.
-# Delete this file and regressions get caught by users instead of us. Not ideal.
 class PersonModelTests(unittest.TestCase):
     def test_person_initializes_with_valid_name_and_email(self):
         person = Person("Ashanti", "ashanti@example.com")
 
-        # These asserts prove constructor input survives validation intact.
-        # Delete them and the test stops checking the happy path.
         self.assertEqual(person.name, "Ashanti")
         self.assertEqual(person.email, "ashanti@example.com")
 
     def test_person_rejects_blank_name(self):
-        # Blank names should die at construction time, not later in production.
-        # Delete this and that bug can sneak back in quietly.
         with self.assertRaises(ValueError):
             Person("", "ashanti@example.com")
 
@@ -35,8 +27,6 @@ class UserModelTests(unittest.TestCase):
     def test_user_inherits_from_person_and_verifies_password(self):
         user = User(1, "Ashanti", "ashanti@example.com", "secret123", "admin")
 
-        # These checks prove inheritance, role storage, and password hashing all still behave.
-        # Delete them and the test misses three important guarantees at once.
         self.assertIsInstance(user, Person)
         self.assertEqual(user.role, "admin")
         self.assertTrue(user.verify_password("secret123"))
@@ -51,8 +41,6 @@ class BookModelTests(unittest.TestCase):
     def test_book_borrow_and_return_updates_available_copies(self):
         book = Book(1, "Clean Code", "Robert C. Martin", "9780132350884", 2)
 
-        # Borrow should drop stock by one. Return should put it back.
-        # Delete either assert and inventory regressions get harder to notice.
         book.borrow_copy()
         self.assertEqual(book.available_copies, 1)
 
@@ -86,14 +74,13 @@ class BorrowRecordModelTests(unittest.TestCase):
     def test_borrow_record_defaults_to_borrowed_status(self):
         record = BorrowRecord(1, 2, 3)
 
-        # New records should start active and without a return timestamp.
-        # Delete these and broken default state can slip through.
         self.assertEqual(record.status, "borrowed")
         self.assertIsNotNone(record.borrowed_at)
         self.assertIsNone(record.returned_at)
 
     def test_borrow_record_marks_returned(self):
         record = BorrowRecord(1, 2, 3)
+
         record.mark_returned()
 
         self.assertEqual(record.status, "returned")
@@ -110,8 +97,6 @@ class ReviewModelTests(unittest.TestCase):
     def test_review_trims_comment_and_stores_rating(self):
         review = Review(1, 2, 3, 5, "  Great book.  ")
 
-        # This proves comments get cleaned and rating stays intact.
-        # Delete these and review normalization can break unnoticed.
         self.assertEqual(review.rating, 5)
         self.assertEqual(review.comment, "Great book.")
         self.assertIsNotNone(review.created_at)
@@ -132,7 +117,5 @@ class ReviewModelTests(unittest.TestCase):
             Review(1, 2, 3, 4, "a" * 501)
 
 
-# Standard test entrypoint so the file also runs by itself.
-# Delete it and discovery still works, but direct execution gets less useful.
 if __name__ == "__main__":
     unittest.main()

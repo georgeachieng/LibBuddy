@@ -1,5 +1,9 @@
 from datetime import datetime
+import json
 from typing import Optional, Dict, Any, List
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from storage.json_store import JSONStore
 
@@ -204,3 +208,99 @@ class LibraryService:
     def is_book_available(self, book_id: int) -> bool:
         book = self.get_book(book_id)
         return book is not None and book.get("available_copies", 0) > 0
+
+    def fetch_books_from_open_library(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
+        query = (query or "").strip()
+        if not query:
+            raise ValueError("Search query cannot be empty.")
+
+        if limit < 1:
+            raise ValueError("Limit must be at least 1.")
+
+        params = urlencode(
+            {
+                "q": query,
+                "limit": min(limit, 20),
+                "fields": "title,author_name,isbn,first_publish_year",
+            }
+        )
+        request = Request(
+            f"https://openlibrary.org/search.json?{params}",
+            headers={"User-Agent": "LibBuddy (george.achieng@student.moringaschool.com)"},
+        )
+
+        try:
+            with urlopen(request, timeout=10) as response:
+                payload = json.load(response)
+        except HTTPError as exc:
+            raise ValueError(f"Book search failed: Open Library returned {exc.code}.") from exc
+        except URLError as exc:
+            raise ValueError("Book search failed: could not reach Open Library.") from exc
+
+        books = []
+        for index, doc in enumerate(payload.get("docs", []), start=1):
+            isbn_candidates = [isbn for isbn in doc.get("isbn", []) if isbn]
+            author_candidates = [author for author in doc.get("author_name", []) if author]
+
+            books.append(
+                {
+                    "result_id": index,
+                    "title": (doc.get("title") or "").strip() or "Untitled",
+                    "author": author_candidates[0].strip() if author_candidates else "Unknown",
+                    "isbn": str(isbn_candidates[0]).strip() if isbn_candidates else "",
+                    "first_publish_year": doc.get("first_publish_year"),
+                }
+            )
+
+        return books
+
+    def import_books(self, books: List[Dict[str, Any]], total_copies: int = 2) -> Dict[str, Any]:
+        if total_copies < 1:
+            raise ValueError("Total copies must be at least 1.")
+
+        imported = []
+        skipped = []
+        existing_books = self.books_store.all()
+        seen_isbns = {
+            (book.get("isbn") or "").strip()
+            for book in existing_books
+            if (book.get("isbn") or "").strip()
+        }
+        seen_titles = {
+            ((book.get("title") or "").strip().lower(), (book.get("author") or "").strip().lower())
+            for book in existing_books
+        }
+
+        for book in books:
+            title = (book.get("title") or "").strip()
+            author = (book.get("author") or "").strip() or "Unknown"
+            isbn = (book.get("isbn") or "").strip()
+            key = (title.lower(), author.lower())
+
+            if not title:
+                skipped.append({"book": book, "reason": "missing title"})
+                continue
+
+            if isbn and isbn in seen_isbns:
+                skipped.append({"book": book, "reason": "duplicate isbn"})
+                continue
+
+            if key in seen_titles:
+                skipped.append({"book": book, "reason": "duplicate title"})
+                continue
+
+            saved = self.add_book(
+                title=title,
+                author=author,
+                isbn=isbn or f"OPENLIB-{title[:12].upper().replace(' ', '-')}-{len(imported) + len(skipped) + 1}",
+                total_copies=total_copies,
+            )
+            imported.append(saved)
+            seen_titles.add(key)
+            if isbn:
+                seen_isbns.add(isbn)
+
+        return {
+            "imported": imported,
+            "skipped": skipped,
+        }

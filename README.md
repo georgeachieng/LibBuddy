@@ -6,6 +6,7 @@ LibBuddy is a Python CLI library system with:
 - admin vs member menus
 - book borrowing and returns
 - review and rating support
+- Open Library search/import for quick catalog seeding
 - JSON file persistence
 
 ## Project Structure
@@ -57,3 +58,4 @@ You can also log in with the matching email instead of the username.
 - The first registered user becomes admin.
 - Members can only review books they have actually borrowed.
 - Borrowing is capped at 3 active books per user.
+- Admins can import books from Open Library without editing JSON by hand.

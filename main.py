@@ -8,6 +8,11 @@ from typing import Any
 
 from utils.decorators import login_required, role_required
 
+try:
+    from tabulate import tabulate
+except ImportError:  # pragma: no cover
+    tabulate = None
+
 
 class ServiceNotReadyError(RuntimeError):
     """Raised when expected teammate service methods are missing."""
@@ -168,6 +173,10 @@ class LibBuddyCLI:
     @staticmethod
     def _print_table(headers: list[str], rows: list[list[Any]]) -> None:
         if not rows:
+            return
+
+        if tabulate is not None:
+            print(tabulate(rows, headers=headers, tablefmt="fancy_grid"))
             return
 
         normalized = [[str(cell) for cell in row] for row in rows]

@@ -1,105 +1,103 @@
 # LibBuddy
 
-LibBuddy is a Python command-line library management system built as a group project.
+LibBuddy is a Python Command-Line Interface (CLI) app for managing a small digital library system.
 
-It supports:
-- user registration and login
-- role-based access for admins and regular users
-- book management
-- borrowing and returning books
-- review and rating support
-- JSON-based persistence
+The project was built for a summative group lab focused on object-oriented design, modular structure, authentication, JSON persistence, testing, and Git collaboration.
 
-## Project Goal
+## Problem Statement
 
-This project was built to demonstrate:
-- object-oriented programming
-- modular Python structure
-- persistent data storage with JSON
-- authentication and role-based access
-- CLI-driven user flows
-- collaborative development with feature branches
+Manual tracking of books and borrowing records gets messy fast.
+Availability becomes inaccurate, records drift, and nobody trusts the data.
 
-## Tech Stack
+LibBuddy fixes that with a CLI that lets users:
+- register and log in securely
+- browse and search books
+- borrow and return books
+- view borrowing history
+- rate and review books they have actually borrowed
 
-- Python 3
-- Standard library only
-- JSON files for persistence
-- `unittest` for tests
+## Core Features
 
-## Features
+### Authentication and Access Control
+- secure user registration and login
+- password hashing before storage
+- first registered user becomes admin automatically
+- role-based access for admin and regular user actions
+- decorator-based access checks for protected CLI actions
 
-### Authentication
-- Register a new user
-- Login with hashed password verification
-- Logout
-- First registered user becomes admin automatically
-- Prevent duplicate email registration
+### Library Management
+- add, update, and delete books
+- track total and available copies
+- borrow and return books with stored borrow records
+- enforce a borrowing limit for each user
+- view current borrows and full borrow history
 
-### Admin Features
-- Add books
-- Update total copies
-- Delete books
-- View all users
-- View all borrow records
-- View book reviews
-
-### User Features
-- List all books
-- Search books by title or author
-- Borrow books
-- Return books
-- View personal borrow history
-- View current borrowed books
-- Add reviews
-- View reviews for a book
+### Reviews
+- users can rate books from 1 to 5
+- users can leave one review per book
+- existing review updates instead of duplicating
+- reviews are only allowed after the user has borrowed that book
 
 ### Persistence
-- Users are stored in `data/users.json`
-- Books are stored in `data/books.json`
-- Borrow records are stored in `data/borrow_records.json`
-- Reviews are stored in `data/reviews.json`
+- JSON file storage for users, books, borrow records, and reviews
+- data survives app restarts without needing a database
+
+## OOP and Structure
+
+LibBuddy uses multiple interacting classes and a modular structure:
+- `Person` is a base model
+- `User` inherits from `Person`
+- `Book`, `BorrowRecord`, and `Review` model core library behavior
+- services handle auth, library actions, and reviews
+- storage is separated into a reusable JSON store
+- validators and decorators live in `utils/`
 
 ## Project Structure
 
 ```text
 LibBuddy/
 ├── main.py
-├── __init__.py
 ├── README.md
+├── requirements.txt
 ├── data/
+│   ├── users.json
 │   ├── books.json
 │   ├── borrow_records.json
-│   ├── reviews.json
-│   └── users.json
+│   └── reviews.json
 ├── models/
-│   ├── __init__.py
+│   ├── person.py
+│   ├── user.py
 │   ├── book.py
 │   ├── borrow_record.py
-│   ├── person.py
-│   ├── review.py
-│   └── user.py
+│   └── review.py
 ├── services/
-│   ├── __init__.py
 │   ├── auth_service.py
 │   ├── library_service.py
 │   └── review_service.py
 ├── storage/
-│   ├── __init__.py
 │   └── json_store.py
-├── tests/
-│   ├── test_cli.py
-│   ├── test_models.py
-│   └── test_services.py
 └── utils/
-    ├── __init__.py
     ├── decorators.py
     └── validators.py
 ```
 
-## Running the App
+Note:
+- The repo also includes package `__init__.py` files, tests, and one legacy root `json_store.py` file that is not the active storage layer.
 
-From the project root:
+## Requirements
+
+- Python 3.10+
+- no required third-party packages right now
+- JSON files for persistence
+- `unittest` for automated testing
+
+Install from the project root:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+## Running the App
 
 ```bash
 python3 main.py
@@ -107,53 +105,28 @@ python3 main.py
 
 ## Running Tests
 
-From the project root:
-
 ```bash
 python3 -m unittest discover -s tests -v
 ```
 
-Current test coverage includes:
+Current automated coverage includes:
 - model validation and behavior
-- auth, library, and review services
-- basic CLI interaction flow with mocks
+- auth, library, and review service rules
+- CLI input and output flow with mocks
 
-## Example CLI Flow
+## Example Flow
 
-### First Run
-1. Start the app
-2. Register the first user
-3. That first user becomes admin automatically
-4. Log in and manage books
+1. Register the first user
+2. Log in as admin
+3. Add books to the system
+4. Register a regular user
+5. Borrow and return books
+6. View borrow history
+7. Leave a review for a borrowed book
 
-### Regular User Flow
-1. Register a normal user
-2. Log in
-3. Browse or search books
-4. Borrow a book
-5. Return a book later
-6. Leave a review
+## Known Limits
 
-## Data Notes
-
-- This application uses JSON files instead of a database.
-- Data persists between runs unless the JSON files are manually edited or cleared.
-- Passwords are hashed before storage.
-
-## Limitations
-
-- No external database
-- No password reset flow
-- No overdue fines or due-date tracking
-- No concurrency protection for simultaneous writes
-- The root `json_store.py` file is legacy-looking and not the active storage layer
-
-## Submission Notes
-
-This repository includes:
-- modular source code
-- persistent data files
-- automated tests
-- a working CLI entrypoint
-
-This covers the core project requirements without overstating the scope of the system.
+- JSON storage is simple, not concurrent-safe
+- there is no due-date or fines system
+- there is no password reset flow
+- the CLI is menu-driven instead of using subcommands

@@ -1,0 +1,2 @@
+# LibBuddy runs on the standard library right now.
+# If this file is removed, the repo stops matching the expected submission structure.

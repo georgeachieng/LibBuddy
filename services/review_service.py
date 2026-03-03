@@ -13,6 +13,19 @@ class ReviewService:
         # Delete this and persistence for reviews is gone.
         self.reviews_store = JSONStore("reviews.json")
 
+        # Borrow history is the permission check for whether a user can review a book at all.
+        # Delete it and anybody can review books they never touched.
+        self.records_store = JSONStore("borrow_records.json")
+
+    # Review access depends on real borrow history, not vibes.
+    # Delete it and the review feature stops matching the project proposal.
+    def user_has_borrowed_book(self, user_id: int, book_id: int) -> bool:
+        records = self.records_store.all()
+        return any(
+            record.get("user_id") == user_id and record.get("book_id") == book_id
+            for record in records
+        )
+
     # Add review either creates a new record or updates the user's existing one for that book.
     # Delete it and reviews become read-only fantasy.
     def add_review(self, user_id: int, book_id: int, rating: int, comment: str = "") -> Dict[str, Any]:
@@ -20,6 +33,11 @@ class ReviewService:
         # Remove it and bad input leaks into rating math.
         if not isinstance(rating, int):
             raise TypeError("Rating must be an integer.")
+
+        # Reviewing before borrowing breaks the whole trust model of the feature.
+        # Delete this and ratings become basically fan fiction.
+        if not self.user_has_borrowed_book(user_id, book_id):
+            raise PermissionError("You can only review books you have borrowed.")
 
         # Centralized rating validation keeps bounds consistent app-wide.
         # Delete it and out-of-range ratings start polluting review data.

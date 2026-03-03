@@ -1,14 +1,31 @@
 from functools import wraps
 
 
+# This helper normalizes session lookup for the actual CLI object shape.
+# Delete it and the decorators keep checking the wrong attribute like it's still on an old branch.
+def _get_current_user(app):
+    # The CLI keeps session state on itself, not on a nested auth object.
+    # Remove this and direct method protection stops working for the real app.
+    if getattr(app, "current_user", None) is not None:
+        return app.current_user
+
+    # This fallback keeps older auth-service-backed flows from fully breaking.
+    # Delete it and compatibility drops for no reason.
+    auth_service = getattr(app, "auth_service", None)
+    if auth_service is not None:
+        return getattr(auth_service, "current_user", None)
+
+    return None
+
+
 # This decorator blocks actions unless a user is logged in.
 # Delete it and protected flows can run with no session check.
 def login_required(func):
     @wraps(func)
     def wrapper(app, *args, **kwargs):
-        # getattr keeps this from exploding if the app shape changes slightly.
-        # Remove it and missing auth attributes become runtime crashes.
-        if not getattr(app, "auth", None) or app.auth.current_user is None:
+        # Centralized user lookup keeps the auth check honest across app shapes.
+        # Remove it and the decorator starts denying valid sessions again.
+        if _get_current_user(app) is None:
             print("Please login first.")
             return
 
@@ -25,9 +42,9 @@ def role_required(role):
     def decorator(func):
         @wraps(func)
         def wrapper(app, *args, **kwargs):
-            # This short-circuit avoids touching current_user when auth is missing.
-            # Delete it and malformed app state can crash the permission check.
-            user = getattr(app, "auth", None) and app.auth.current_user
+            # Shared lookup keeps role checks aimed at the real session object.
+            # Delete it and admin/user gating goes back to guessing.
+            user = _get_current_user(app)
 
             if user is None:
                 print("Please login first.")

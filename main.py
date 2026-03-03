@@ -624,6 +624,49 @@ class LibBuddyCLI:
                 f"Role: {self._get_field(user, 'role')}"
             )
 
+    # Admin account creation keeps role management inside the app instead of in raw JSON edits.
+    # Delete it and adding a second admin goes back to manual file surgery.
+    @role_required("admin")
+    def create_admin(self) -> None:
+        print("\n=== Create Admin ===")
+        name = self._get_input("Name: ")
+        username = self._get_input("Username: ")
+        email = self._get_input("Email: ")
+        password = self._get_input("Password: ")
+
+        if not (name and username and email and password):
+            print("Please fill in every field.")
+            return
+
+        try:
+            created = self._call(
+                self.auth_service,
+                ["register", "create_user", "signup"],
+                name=name,
+                email=email,
+                password=password,
+                role="admin",
+                username=username,
+            )
+        except TypeError:
+            created = self._call(
+                self.auth_service,
+                ["register", "create_user", "signup"],
+                name,
+                email,
+                password,
+                "admin",
+                username,
+            )
+        except (PermissionError, ValueError) as exc:
+            print(exc)
+            return
+
+        if created:
+            print(f"Admin account created for {self._get_field(self._to_dict(created), 'username', 'name')}.")
+        else:
+            print("Could not create the admin account.")
+
     # Review creation is one of the user-facing extras that proves the app is more than CRUD.
     # Delete it and ratings become read-only fiction.
     @login_required
@@ -823,6 +866,21 @@ class LibBuddyCLI:
             else:
                 print("Invalid option. Try again.")
 
+    # Grouping user actions keeps admin navigation short while still exposing account controls.
+    # Delete it and the main admin menu starts bloating again.
+    def users_menu(self) -> None:
+        while self.current_user is not None:
+            choice = self._show_menu("Users", ["List users", "Create admin", "Back"])
+
+            if choice == "1":
+                self.list_users()
+            elif choice == "2":
+                self.create_admin()
+            elif choice == "3":
+                return
+            else:
+                print("Invalid option. Try again.")
+
     # This gives admins a quick review overview instead of forcing book-by-book digging.
     # Delete it and review moderation stays awkward.
     @role_required("admin")
@@ -895,7 +953,7 @@ class LibBuddyCLI:
                 if choice == "1":
                     self.catalog_menu()
                 elif choice == "2":
-                    self.list_users()
+                    self.users_menu()
                 elif choice == "3":
                     self.view_all_records()
                 elif choice == "4":

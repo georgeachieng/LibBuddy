@@ -122,6 +122,27 @@ class CLITests(unittest.TestCase):
         self.assertIn("Access denied. Requires role: admin.", output)
         library.add_book.assert_not_called()
 
+    def test_create_admin_calls_auth_service_with_admin_role(self):
+        cli, auth, _, _ = self.make_cli()
+        cli.current_user = {"id": 1, "role": "admin"}
+        auth.register.return_value = {"id": 6, "username": "joyburgei", "role": "admin"}
+
+        output = self.capture_output(
+            cli.create_admin,
+            inputs=["Joy Burgei", "joyburgei", "joy@example.com", "secret123"],
+        )
+
+        # This locks down the admin-only account creation path from the CLI side.
+        # Delete it and the menu can drift away from the auth contract.
+        self.assertIn("Admin account created for joyburgei.", output)
+        auth.register.assert_called_once_with(
+            name="Joy Burgei",
+            email="joy@example.com",
+            password="secret123",
+            role="admin",
+            username="joyburgei",
+        )
+
     def test_my_current_borrows_prints_active_record_count(self):
         cli, _, library, _ = self.make_cli()
         cli.current_user = {"id": 4, "role": "user"}

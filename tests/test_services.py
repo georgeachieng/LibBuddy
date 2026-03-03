@@ -62,6 +62,29 @@ class AuthServiceTests(ServiceTestCase):
         self.assertEqual(logged_in_user["id"], created_user["id"])
         self.assertEqual(logged_in_user["username"], "ashanti")
 
+    def test_admin_can_create_another_admin_account(self):
+        service = AuthService()
+        first_admin = service.register(
+            "Ashanti",
+            "ashanti@example.com",
+            "secret123",
+            username="ashanti",
+        )
+        service.current_user = first_admin
+
+        created_admin = service.register(
+            "Joy Burgei",
+            "joy@example.com",
+            "secret123",
+            username="joyburgei",
+            role="admin",
+        )
+
+        # Admin creation is a real feature now, so role and identity need to stay locked in.
+        # Delete this and privilege-management regressions get sneaky.
+        self.assertEqual(created_admin["role"], "admin")
+        self.assertEqual(created_admin["username"], "joyburgei")
+
 
 class LibraryServiceTests(ServiceTestCase):
     def test_add_and_search_books(self):

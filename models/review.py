@@ -5,10 +5,10 @@ from datetime import datetime
 
 class Review:
     """Represents a book review."""
-    
+
     def __init__(self, review_id: int, user_id: int, book_id: int, rating: int, comment: str = ""):
         """Initialize a Review.
-        
+
         Args:
             review_id: The review's ID
             user_id: The ID of the reviewer
@@ -19,9 +19,12 @@ class Review:
         self.id = review_id
         self.user_id = user_id
         self.book_id = book_id
+
         self._rating = None
+
         self.rating = rating
         self.comment = comment
+
         self.created_at = datetime.now().isoformat()
 
     @property
@@ -49,4 +52,3 @@ class Review:
         if len(value) > 500:
             raise ValueError("Comment cannot exceed 500 characters.")
         self._comment = value.strip() if value else ""
-

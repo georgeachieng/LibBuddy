@@ -1,15 +1,12 @@
 from __future__ import annotations
 
+from datetime import datetime
 from dataclasses import asdict, is_dataclass
 from importlib import import_module
+from textwrap import shorten
 from typing import Any
 
 from utils.decorators import login_required, role_required
-
-try:
-    from tabulate import tabulate
-except ImportError:
-    tabulate = None
 
 
 class ServiceNotReadyError(RuntimeError):
@@ -79,7 +76,7 @@ class LibBuddyCLI:
 
                 return value
             except ValueError:
-                print("Please enter a valid number.")
+                print("Enter a valid number.")
 
     @staticmethod
     def _get_field(item: dict[str, Any], *keys: str, default: Any = "-") -> Any:
@@ -98,76 +95,116 @@ class LibBuddyCLI:
         role = str(self._get_field(user_dict, "role", default="user")).lower()
         return role
 
+    @staticmethod
+    def _format_timestamp(value: Any) -> str:
+        if not value or value == "-":
+            return "-"
+        try:
+            return datetime.fromisoformat(str(value)).strftime("%Y-%m-%d %H:%M")
+        except ValueError:
+            return str(value)
+
+    def _get_book_label(self, book_id: Any) -> str:
+        try:
+            book = self._call(self.library_service, ["get_book", "get_book_status"], int(book_id))
+        except (ServiceNotReadyError, TypeError, ValueError):
+            book = None
+
+        if book:
+            book_dict = self._to_dict(book)
+            title = self._get_field(book_dict, "title")
+            return shorten(str(title), width=32, placeholder="...")
+
+        return f"Book {book_id}"
+
+    def _get_user_label(self, user_id: Any) -> str:
+        try:
+            user = self._call(self.auth_service, ["get_user_by_id"], int(user_id))
+        except (ServiceNotReadyError, TypeError, ValueError):
+            user = None
+
+        if user:
+            user_dict = self._to_dict(user)
+            username = self._get_field(user_dict, "username", default="")
+            if username and username != "-":
+                return str(username)
+            return str(self._get_field(user_dict, "name"))
+
+        return f"user-{user_id}"
+
+    def _get_reviewable_book_ids(self, user_id: Any) -> list[int]:
+        try:
+            records = self._call(
+                self.library_service,
+                ["my_borrow_history", "get_user_history", "user_borrow_records"],
+                user_id,
+            )
+        except TypeError:
+            records = self._call(
+                self.library_service,
+                ["my_borrow_history", "get_user_history", "user_borrow_records"],
+                user_id=user_id,
+            )
+
+        seen: set[int] = set()
+        reviewable: list[int] = []
+        for record in list(records):
+            record_dict = self._to_dict(record)
+            book_id = self._get_field(record_dict, "book_id", default=None)
+            if isinstance(book_id, int) and book_id not in seen:
+                seen.add(book_id)
+                reviewable.append(book_id)
+
+        return reviewable
+
+    def _show_menu(self, title: str, options: list[str]) -> str:
+        print(f"\n=== {title} ===")
+        for index, option in enumerate(options, start=1):
+            print(f"{index}. {option}")
+        return self._get_input("Select an option: ")
+
     def _print_books(self, books: list[Any]) -> None:
         if not books:
             print("No books found.")
             return
 
-        rows = []
+        print("\nBooks:")
         for book in books:
             b = self._to_dict(book)
-            rows.append(
-                [
-                    self._get_field(b, "id", "book_id"),
-                    self._get_field(b, "title"),
-                    self._get_field(b, "author"),
-                    self._get_field(b, "isbn"),
-                    self._get_field(b, "available_copies"),
-                ]
+            print(
+                f"- [{self._get_field(b, 'id', 'book_id')}] "
+                f"{shorten(str(self._get_field(b, 'title')), width=32, placeholder='...')} | "
+                f"{shorten(str(self._get_field(b, 'author')), width=20, placeholder='...')} | "
+                f"ISBN: {self._get_field(b, 'isbn')} | "
+                f"Available: {self._get_field(b, 'available_copies')}/{self._get_field(b, 'total_copies')}"
             )
-
-        print("\nBooks:")
-        if tabulate is not None:
-            print(tabulate(rows, headers=["ID", "Title", "Author", "ISBN", "Available"], tablefmt="github"))
-            return
-
-        for row in rows:
-            print(f"- ID: {row[0]} | {row[1]} by {row[2]} | ISBN: {row[3]} | Available: {row[4]}")
 
     def _print_records(self, records: list[Any]) -> None:
         if not records:
             print("No borrow records found.")
             return
 
-        rows = []
+        print("\nBorrow Records:")
         for record in records:
             r = self._to_dict(record)
-            rows.append(
-                [
-                    self._get_field(r, "id", "record_id"),
-                    self._get_field(r, "user_id"),
-                    self._get_field(r, "book_id"),
-                    self._get_field(r, "status"),
-                    self._get_field(r, "borrowed_at"),
-                    self._get_field(r, "returned_at", default="-"),
-                ]
-            )
-
-        print("\nBorrow Records:")
-        if tabulate is not None:
             print(
-                tabulate(
-                    rows,
-                    headers=["Record ID", "User", "Book", "Status", "Borrowed", "Returned"],
-                    tablefmt="github",
-                )
-            )
-            return
-
-        for row in rows:
-            print(
-                f"- Record ID: {row[0]} | User: {row[1]} | Book: {row[2]} | "
-                f"Status: {row[3]} | Borrowed: {row[4]} | Returned: {row[5]}"
+                f"- #{self._get_field(r, 'id', 'record_id')} | "
+                f"User: {self._get_user_label(self._get_field(r, 'user_id'))} | "
+                f"Book: {self._get_book_label(self._get_field(r, 'book_id'))} | "
+                f"Status: {self._get_field(r, 'status')} | "
+                f"Borrowed: {self._format_timestamp(self._get_field(r, 'borrowed_at'))} | "
+                f"Returned: {self._format_timestamp(self._get_field(r, 'returned_at', default='-'))}"
             )
 
     def register(self) -> None:
         print("\n=== Register ===")
         name = self._get_input("Name: ")
+        username = self._get_input("Username: ")
         email = self._get_input("Email: ")
         password = self._get_input("Password: ")
 
-        if not (name and email and password):
-            print("All fields are required.")
+        if not (name and username and email and password):
+            print("Please fill in every field.")
             return
 
         try:
@@ -178,6 +215,7 @@ class LibBuddyCLI:
                 email=email,
                 password=password,
                 role="user",
+                username=username,
             )
         except TypeError:
             created = self._call(
@@ -187,19 +225,22 @@ class LibBuddyCLI:
                 email,
                 password,
             )
+        except (PermissionError, ValueError) as exc:
+            print(exc)
+            return
 
         if created:
-            print("Registration successful. You can now log in.")
+            print("Account created. You can log in now.")
         else:
-            print("Registration failed.")
+            print("Could not create the account.")
 
     def login(self) -> None:
         print("\n=== Login ===")
-        email = self._get_input("Email: ")
+        email = self._get_input("Email or username: ")
         password = self._get_input("Password: ")
 
         if not (email and password):
-            print("Email and password are required.")
+            print("Enter both your email or username and your password.")
             return
 
         try:
@@ -216,13 +257,16 @@ class LibBuddyCLI:
                 email,
                 password,
             )
+        except ValueError as exc:
+            print(exc)
+            return
 
         if not user:
-            print("Invalid credentials.")
+            print("Login failed. Check your details and try again.")
             return
 
         self.current_user = user
-        print("Login successful.")
+        print(f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}.")
 
     def logout(self) -> None:
         try:
@@ -231,7 +275,7 @@ class LibBuddyCLI:
             pass
 
         self.current_user = None
-        print("Logged out.")
+        print("You have been logged out.")
 
     def list_books(self) -> None:
         books = self._call(self.library_service, ["list_books", "get_books", "all_books"])
@@ -240,7 +284,7 @@ class LibBuddyCLI:
     def search_books(self) -> None:
         query = self._get_input("Search by title/author: ")
         if not query:
-            print("Search query cannot be empty.")
+            print("Enter something to search for.")
             return
 
         try:
@@ -279,9 +323,9 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book borrowed successfully.")
+            print("Book borrowed.")
         else:
-            print("Could not borrow book.")
+            print("Could not borrow that book.")
 
     @login_required
     def return_book(self) -> None:
@@ -304,9 +348,9 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book returned successfully.")
+            print("Book returned.")
         else:
-            print("Could not return book.")
+            print("Could not return that book.")
 
     @login_required
     def my_history(self) -> None:
@@ -361,9 +405,9 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book added.")
+            print("Book added to the catalog.")
         else:
-            print("Failed to add book.")
+            print("Could not add the book.")
 
     @role_required("admin")
     def update_book_copies(self) -> None:
@@ -388,7 +432,7 @@ class LibBuddyCLI:
         if ok:
             print("Book copies updated.")
         else:
-            print("Failed to update book copies.")
+            print("Could not update the copy count.")
 
     @role_required("admin")
     def delete_book(self) -> None:
@@ -404,9 +448,9 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book deleted.")
+            print("Book removed from the catalog.")
         else:
-            print("Failed to delete book.")
+            print("Could not delete that book.")
 
     @role_required("admin")
     def view_all_records(self) -> None:
@@ -427,37 +471,75 @@ class LibBuddyCLI:
             return
 
         print("\nUsers:")
-        if tabulate is not None:
-            print(
-                tabulate(
-                    [
-                        [
-                            self._get_field(user, "id", "user_id"),
-                            self._get_field(user, "name"),
-                            self._get_field(user, "email"),
-                            self._get_field(user, "role"),
-                        ]
-                        for user in users
-                    ],
-                    headers=["ID", "Name", "Email", "Role"],
-                    tablefmt="github",
-                )
-            )
-            return
-
         for user in users:
             print(
                 f"- ID: {self._get_field(user, 'id', 'user_id')} | "
+                f"Username: {self._get_field(user, 'username')} | "
                 f"Name: {self._get_field(user, 'name')} | "
                 f"Email: {self._get_field(user, 'email')} | "
                 f"Role: {self._get_field(user, 'role')}"
             )
 
+    @role_required("admin")
+    def create_admin(self) -> None:
+        print("\n=== Create Admin ===")
+        name = self._get_input("Name: ")
+        username = self._get_input("Username: ")
+        email = self._get_input("Email: ")
+        password = self._get_input("Password: ")
+
+        if not (name and username and email and password):
+            print("Please fill in every field.")
+            return
+
+        try:
+            created = self._call(
+                self.auth_service,
+                ["register", "create_user", "signup"],
+                name=name,
+                email=email,
+                password=password,
+                role="admin",
+                username=username,
+            )
+        except TypeError:
+            created = self._call(
+                self.auth_service,
+                ["register", "create_user", "signup"],
+                name,
+                email,
+                password,
+                "admin",
+                username,
+            )
+        except (PermissionError, ValueError) as exc:
+            print(exc)
+            return
+
+        if created:
+            print(f"Admin account created for {self._get_field(self._to_dict(created), 'username', 'name')}.")
+        else:
+            print("Could not create the admin account.")
+
     @login_required
     def add_review(self) -> None:
         print("\n=== Add Review ===")
         user_id = self._get_current_user_id()
+        reviewable_book_ids = self._get_reviewable_book_ids(user_id)
+
+        if not reviewable_book_ids:
+            print("You can only review books you have borrowed.")
+            return
+
+        print("Your reviewable books:")
+        for book_id in reviewable_book_ids:
+            print(f"- [{book_id}] {self._get_book_label(book_id)}")
+
         book_id = self._prompt_int("Book ID to review: ", min_value=1)
+        if book_id not in reviewable_book_ids:
+            print("Choose a book from your borrowing history.")
+            return
+
         rating = self._prompt_int("Rating (1-5): ", min_value=1)
 
         if rating > 5:
@@ -484,11 +566,14 @@ class LibBuddyCLI:
                 rating=rating,
                 comment=comment,
             )
+        except (PermissionError, ValueError) as exc:
+            print(exc)
+            return
 
         if review:
-            print("Review added successfully.")
+            print("Review saved.")
         else:
-            print("Failed to add review.")
+            print("Could not save the review.")
 
     def view_book_reviews(self) -> None:
         book_id = self._prompt_int("Book ID to view reviews: ", min_value=1)
@@ -508,7 +593,7 @@ class LibBuddyCLI:
 
         reviews = list(reviews)
         if not reviews:
-            print("No reviews found for this book.")
+            print("No reviews yet for that book.")
             return
 
         try:
@@ -520,16 +605,21 @@ class LibBuddyCLI:
         except (ServiceNotReadyError, TypeError):
             avg_rating = None
 
-        print(f"\nReviews for Book ID {book_id}:")
+        print(f"\nReviews for {self._get_book_label(book_id)}:")
         if avg_rating:
             print(f"Average Rating: {avg_rating:.1f}/5")
         print("-" * 40)
 
+        reviews.sort(key=lambda review: self._get_field(self._to_dict(review), "created_at", default=""), reverse=True)
         for review in reviews:
             r = self._to_dict(review)
 
             stars = "*" * self._get_field(r, "rating", default=0)
-            print(f"  User {self._get_field(r, 'user_id')}: {stars}")
+            print(
+                f"  {self._get_user_label(self._get_field(r, 'user_id'))} | "
+                f"{stars} ({self._get_field(r, 'rating')}/5) | "
+                f"{self._format_timestamp(self._get_field(r, 'created_at', default='-'))}"
+            )
 
             comment = self._get_field(r, "comment", default="")
             if comment and comment != "-":
@@ -554,31 +644,105 @@ class LibBuddyCLI:
 
         records = list(records)
         if not records:
-            print("You have no books currently borrowed.")
+            print("You do not have any active borrows.")
             return
 
         print(f"\nCurrently Borrowed Books ({len(records)}/3 limit):")
         for record in records:
             r = self._to_dict(record)
             print(
-                f"- Book ID: {self._get_field(r, 'book_id')} | "
-                f"Borrowed: {self._get_field(r, 'borrowed_at')}"
+                f"- {self._get_book_label(self._get_field(r, 'book_id'))} | "
+                f"Borrowed: {self._format_timestamp(self._get_field(r, 'borrowed_at'))}"
             )
+
+    def reviews_menu(self) -> None:
+        while self.current_user is not None:
+            choice = self._show_menu("Reviews", ["Write or update review", "View book reviews", "Back"])
+
+            if choice == "1":
+                self.add_review()
+            elif choice == "2":
+                self.view_book_reviews()
+            elif choice == "3":
+                return
+            else:
+                print("Invalid option. Try again.")
+
+    def my_books_menu(self) -> None:
+        while self.current_user is not None:
+            choice = self._show_menu("My Books", ["Current borrows", "Borrow history", "Back"])
+
+            if choice == "1":
+                self.my_current_borrows()
+            elif choice == "2":
+                self.my_history()
+            elif choice == "3":
+                return
+            else:
+                print("Invalid option. Try again.")
+
+    def catalog_menu(self) -> None:
+        while self.current_user is not None:
+            choice = self._show_menu("Catalog", ["Browse books", "Add book", "Update copies", "Remove book", "Back"])
+
+            if choice == "1":
+                self.list_books()
+            elif choice == "2":
+                self.add_book()
+            elif choice == "3":
+                self.update_book_copies()
+            elif choice == "4":
+                self.delete_book()
+            elif choice == "5":
+                return
+            else:
+                print("Invalid option. Try again.")
+
+    def users_menu(self) -> None:
+        while self.current_user is not None:
+            choice = self._show_menu("Users", ["List users", "Create admin", "Back"])
+
+            if choice == "1":
+                self.list_users()
+            elif choice == "2":
+                self.create_admin()
+            elif choice == "3":
+                return
+            else:
+                print("Invalid option. Try again.")
+
+    @role_required("admin")
+    def view_recent_reviews(self) -> None:
+        try:
+            reviews = self._call(self.review_service, ["list_recent_reviews"], 10)
+        except ServiceNotReadyError:
+            reviews = self._call(self.review_service, ["list_all_reviews", "all_reviews"])
+            reviews = sorted(
+                list(reviews),
+                key=lambda review: self._get_field(self._to_dict(review), "created_at", default=""),
+                reverse=True,
+            )[:10]
+
+        if not reviews:
+            print("No reviews found.")
+            return
+
+        print("\nRecent Reviews:")
+        for review in reviews[:10]:
+            r = self._to_dict(review)
+            print(
+                f"- {self._get_book_label(self._get_field(r, 'book_id'))} | "
+                f"{self._get_user_label(self._get_field(r, 'user_id'))} | "
+                f"{self._get_field(r, 'rating')}/5 | "
+                f"{self._format_timestamp(self._get_field(r, 'created_at', default='-'))}"
+            )
+            comment = self._get_field(r, "comment", default="")
+            if comment and comment != "-":
+                print(f"  \"{comment}\"")
 
     def user_menu(self) -> None:
         while self.current_user is not None:
-            print("\n=== User Menu ===")
-            print("1. List books")
-            print("2. Search books")
-            print("3. Borrow book")
-            print("4. Return book")
-            print("5. My current borrows")
-            print("6. My borrow history")
-            print("7. Add review")
-            print("8. View book reviews")
-            print("9. Logout")
-
-            choice = self._get_input("Choose an option: ")
+            choice = self._show_menu("Member Menu", ["Browse books", "Search books", "Borrow", "Return", "My books", "Reviews", "Logout"])
 
             try:
                 if choice == "1":
@@ -590,66 +754,41 @@ class LibBuddyCLI:
                 elif choice == "4":
                     self.return_book()
                 elif choice == "5":
-                    self.my_current_borrows()
+                    self.my_books_menu()
                 elif choice == "6":
-                    self.my_history()
+                    self.reviews_menu()
                 elif choice == "7":
-                    self.add_review()
-                elif choice == "8":
-                    self.view_book_reviews()
-                elif choice == "9":
                     self.logout()
                     return
                 else:
                     print("Invalid option. Try again.")
             except (ServiceNotReadyError, ValueError) as exc:
-                print(f"Action failed: {exc}")
+                print(f"Could not complete that action: {exc}")
 
     def admin_menu(self) -> None:
         while self.current_user is not None:
-            print("\n=== Admin Menu ===")
-            print("1. List books")
-            print("2. Add book")
-            print("3. Update book copies")
-            print("4. Delete book")
-            print("5. View all borrow records")
-            print("6. List all users")
-            print("7. View book reviews")
-            print("8. Logout")
-
-            choice = self._get_input("Choose an option: ")
+            choice = self._show_menu("Admin Menu", ["Catalog", "Users", "Borrow records", "Reviews", "Logout"])
 
             try:
                 if choice == "1":
-                    self.list_books()
+                    self.catalog_menu()
                 elif choice == "2":
-                    self.add_book()
+                    self.users_menu()
                 elif choice == "3":
-                    self.update_book_copies()
-                elif choice == "4":
-                    self.delete_book()
-                elif choice == "5":
                     self.view_all_records()
-                elif choice == "6":
-                    self.list_users()
-                elif choice == "7":
-                    self.view_book_reviews()
-                elif choice == "8":
+                elif choice == "4":
+                    self.view_recent_reviews()
+                elif choice == "5":
                     self.logout()
                     return
                 else:
                     print("Invalid option. Try again.")
             except (ServiceNotReadyError, ValueError) as exc:
-                print(f"Action failed: {exc}")
+                print(f"Could not complete that action: {exc}")
 
     def run(self) -> None:
         while True:
-            print("\n=== Welcome to LibBuddy ===")
-            print("1. Register")
-            print("2. Login")
-            print("3. Exit")
-
-            choice = self._get_input("Choose an option: ")
+            choice = self._show_menu("Welcome to LibBuddy", ["Register", "Login", "Exit"])
 
             try:
                 if choice == "1":
@@ -673,7 +812,7 @@ class LibBuddyCLI:
             except ServiceNotReadyError as exc:
                 print(f"Setup issue: {exc}")
             except Exception as exc:
-                print(f"Unexpected error: {exc}")
+                print(f"Something unexpected happened: {exc}")
 
 
 def main() -> None:

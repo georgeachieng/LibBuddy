@@ -35,19 +35,24 @@ class CLITests(unittest.TestCase):
 
         output = self.capture_output(
             cli.register,
-            inputs=["", "ashanti@example.com", "secret123"],
+            inputs=["", "ashanti", "ashanti@example.com", "secret123"],
         )
 
-        self.assertIn("All fields are required.", output)
+        self.assertIn("Please fill in every field.", output)
         auth.register.assert_not_called()
 
     def test_login_sets_current_user_on_success(self):
         cli, auth, _, _ = self.make_cli()
-        auth.login.return_value = {"id": 1, "email": "ashanti@example.com", "role": "user"}
+        auth.login.return_value = {
+            "id": 1,
+            "email": "ashanti@example.com",
+            "username": "ashanti",
+            "role": "user",
+        }
 
         output = self.capture_output(
             cli.login,
-            inputs=["ashanti@example.com", "secret123"],
+            inputs=["ashanti", "secret123"],
         )
 
         self.assertIn("Login successful.", output)
@@ -68,12 +73,15 @@ class CLITests(unittest.TestCase):
         output = self.capture_output(cli.list_books)
 
         self.assertIn("Books:", output)
-        self.assertIn("Clean Code by Robert C. Martin", output)
+        self.assertIn("Clean Code", output)
+        self.assertIn("Robert C. Martin", output)
         self.assertIn("Available: 2", output)
 
     def test_add_review_rejects_rating_above_five_before_calling_service(self):
-        cli, _, _, review = self.make_cli()
+        cli, _, library, review = self.make_cli()
         cli.current_user = {"id": 4, "role": "user"}
+        library.my_borrow_history.return_value = [{"book_id": 12}]
+        library.get_book.return_value = {"id": 12, "title": "Refactoring"}
 
         output = self.capture_output(
             cli.add_review,
@@ -92,9 +100,29 @@ class CLITests(unittest.TestCase):
         self.assertIn("Access denied. Requires role: admin.", output)
         library.add_book.assert_not_called()
 
+    def test_create_admin_calls_auth_service_with_admin_role(self):
+        cli, auth, _, _ = self.make_cli()
+        cli.current_user = {"id": 1, "role": "admin"}
+        auth.register.return_value = {"id": 6, "username": "joyburgei", "role": "admin"}
+
+        output = self.capture_output(
+            cli.create_admin,
+            inputs=["Joy Burgei", "joyburgei", "joy@example.com", "secret123"],
+        )
+
+        self.assertIn("Admin account created for joyburgei.", output)
+        auth.register.assert_called_once_with(
+            name="Joy Burgei",
+            email="joy@example.com",
+            password="secret123",
+            role="admin",
+            username="joyburgei",
+        )
+
     def test_my_current_borrows_prints_active_record_count(self):
         cli, _, library, _ = self.make_cli()
         cli.current_user = {"id": 4, "role": "user"}
+        library.get_book.return_value = {"id": 12, "title": "Refactoring"}
         library.get_user_active_borrows.return_value = [
             {"book_id": 12, "borrowed_at": "2026-03-03T11:00:00"}
         ]
@@ -102,7 +130,22 @@ class CLITests(unittest.TestCase):
         output = self.capture_output(cli.my_current_borrows)
 
         self.assertIn("Currently Borrowed Books (1/3 limit):", output)
-        self.assertIn("Book ID: 12", output)
+        self.assertIn("Refactoring", output)
+
+    def test_add_review_requires_book_from_borrow_history(self):
+        cli, _, library, review = self.make_cli()
+        cli.current_user = {"id": 4, "role": "user"}
+        library.my_borrow_history.return_value = [{"book_id": 3}]
+        library.get_book.return_value = {"id": 3, "title": "Design Patterns"}
+
+        output = self.capture_output(
+            cli.add_review,
+            inputs=["9"],
+        )
+
+        self.assertIn("Your reviewable books:", output)
+        self.assertIn("Choose a book from your borrowing history.", output)
+        review.add_review.assert_not_called()
 
 
 if __name__ == "__main__":

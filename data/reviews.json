@@ -1,1 +1,82 @@
-[]
+[
+    {
+        "id": 1,
+        "user_id": 2,
+        "book_id": 1,
+        "rating": 5,
+        "comment": "Clean Code is blunt in a good way. The naming and function-size chapters were the most useful for me.",
+        "created_at": "2026-02-27T10:15:00"
+    },
+    {
+        "id": 2,
+        "user_id": 3,
+        "book_id": 2,
+        "rating": 4,
+        "comment": "The Pragmatic Programmer feels older in spots, but the advice on habits and trade-offs still lands.",
+        "created_at": "2026-02-28T16:00:00"
+    },
+    {
+        "id": 3,
+        "user_id": 5,
+        "book_id": 5,
+        "rating": 5,
+        "comment": "Python Crash Course was actually beginner-friendly. I got through the basics fast without feeling lost.",
+        "created_at": "2026-02-26T09:30:00"
+    },
+    {
+        "id": 4,
+        "user_id": 2,
+        "book_id": 6,
+        "rating": 4,
+        "comment": "Automate the Boring Stuff is super practical. The file and spreadsheet examples were the parts I reused right away.",
+        "created_at": "2026-03-01T17:15:00"
+    },
+    {
+        "id": 5,
+        "user_id": 4,
+        "book_id": 8,
+        "rating": 4,
+        "comment": "Grokking Algorithms explains the ideas without trying to sound smarter than the reader. Good intro book.",
+        "created_at": "2026-03-02T18:45:00"
+    },
+    {
+        "id": 6,
+        "user_id": 5,
+        "book_id": 9,
+        "rating": 3,
+        "comment": "Introduction to Algorithms is useful, but definitely not a casual read. More reference book than bedtime story.",
+        "created_at": "2026-03-03T08:20:00"
+    },
+    {
+        "id": 7,
+        "user_id": 2,
+        "book_id": 10,
+        "rating": 5,
+        "comment": "Head First Design Patterns made the examples easier to remember. Way less dry than I expected.",
+        "created_at": "2026-03-01T11:40:00"
+    },
+    {
+        "id": 8,
+        "user_id": 3,
+        "book_id": 11,
+        "rating": 4,
+        "comment": "Effective Python is nice when you already know the basics and want sharper habits. Short chapters, low nonsense.",
+        "created_at": "2026-03-02T08:25:00"
+    },
+    {
+        "id": 9,
+        "user_id": 4,
+        "book_id": 12,
+        "rating": 5,
+        "comment": "Cracking the Coding Interview is still solid for practice. The walkthroughs made the harder questions less annoying.",
+        "created_at": "2026-03-02T16:15:00"
+    },
+    {
+        "id": 10,
+        "user_id": 5,
+        "book_id": 13,
+        "rating": 4,
+        "comment": "You Don't Know JS Yet goes deeper than most JS books. Not beginner-light, but great once the basics already click.",
+        "created_at": "2026-03-03T09:30:00"
+    }
+]

@@ -8,7 +8,9 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 class JSONStore:
     def __init__(self, filename: str):
         self.filepath = os.path.join(DATA_DIR, filename)
+
         os.makedirs(DATA_DIR, exist_ok=True)
+
         if not os.path.exists(self.filepath):
             self._write([])
 
@@ -37,8 +39,10 @@ class JSONStore:
 
     def save(self, record: Dict[str, Any], auto_id: bool = True) -> Dict[str, Any]:
         data = self._read()
+
         if auto_id and "id" not in record:
             record["id"] = self._generate_id(data)
+
         data.append(record)
         self._write(data)
         return record
@@ -55,8 +59,10 @@ class JSONStore:
     def delete(self, record_id: int) -> bool:
         data = self._read()
         new_data = [item for item in data if item.get("id") != record_id]
+
         if len(new_data) == len(data):
             return False
+
         self._write(new_data)
         return True
 

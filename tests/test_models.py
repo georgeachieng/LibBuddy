@@ -80,7 +80,6 @@ class BorrowRecordModelTests(unittest.TestCase):
 
     def test_borrow_record_marks_returned(self):
         record = BorrowRecord(1, 2, 3)
-
         record.mark_returned()
 
         self.assertEqual(record.status, "returned")

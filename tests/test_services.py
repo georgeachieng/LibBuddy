@@ -36,6 +36,41 @@ class AuthServiceTests(ServiceTestCase):
         with self.assertRaises(ValueError):
             service.register("Another", "ashanti@example.com", "different123")
 
+    def test_login_accepts_username_as_identifier(self):
+        service = AuthService()
+        created_user = service.register(
+            "Ashanti",
+            "ashanti@example.com",
+            "secret123",
+            username="ashanti",
+        )
+
+        logged_in_user = service.login("ashanti", "secret123")
+
+        self.assertEqual(logged_in_user["id"], created_user["id"])
+        self.assertEqual(logged_in_user["username"], "ashanti")
+
+    def test_admin_can_create_another_admin_account(self):
+        service = AuthService()
+        first_admin = service.register(
+            "Ashanti",
+            "ashanti@example.com",
+            "secret123",
+            username="ashanti",
+        )
+        service.current_user = first_admin
+
+        created_admin = service.register(
+            "Joy Burgei",
+            "joy@example.com",
+            "secret123",
+            username="joyburgei",
+            role="admin",
+        )
+
+        self.assertEqual(created_admin["role"], "admin")
+        self.assertEqual(created_admin["username"], "joyburgei")
+
 
 class LibraryServiceTests(ServiceTestCase):
     def test_add_and_search_books(self):
@@ -124,6 +159,21 @@ class ReviewServiceTests(ServiceTestCase):
         self.assertEqual(len(reviews), 2)
         self.assertEqual(reviews[0]["comment"], "Excellent")
         self.assertEqual(average, 4.0)
+
+    def test_list_recent_reviews_returns_latest_first(self):
+        library_service = LibraryService()
+        service = ReviewService()
+        first_book = library_service.add_book("Clean Code", "Robert C. Martin", "9780132350884", 1)
+        second_book = library_service.add_book("Refactoring", "Martin Fowler", "9780201485677", 1)
+        library_service.borrow_book(user_id=1, book_id=first_book["id"])
+        library_service.borrow_book(user_id=2, book_id=second_book["id"])
+        service.add_review(1, first_book["id"], 4, "First")
+        service.add_review(2, second_book["id"], 5, "Second")
+
+        recent = service.list_recent_reviews()
+
+        self.assertEqual(recent[0]["comment"], "Second")
+        self.assertEqual(recent[1]["comment"], "First")
 
     def test_adding_second_review_for_same_user_updates_existing_review(self):
         library_service = LibraryService()

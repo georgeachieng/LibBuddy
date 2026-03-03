@@ -102,5 +102,16 @@ class ReviewService:
         total_rating = sum(r.get("rating", 0) for r in reviews)
         return total_rating / len(reviews)
 
+    def get_book_average_rating(self, book_id: int) -> Optional[float]:
+        return self.get_book_rating(book_id)
+
+    def average_rating(self, book_id: int) -> Optional[float]:
+        return self.get_book_rating(book_id)
+
     def list_all_reviews(self) -> List[Dict[str, Any]]:
         return self.reviews_store.all()
+
+    def list_recent_reviews(self, limit: int = 10) -> List[Dict[str, Any]]:
+        reviews = self.reviews_store.all()
+        reviews.sort(key=lambda review: review.get("created_at", ""), reverse=True)
+        return reviews[:limit]

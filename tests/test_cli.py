@@ -3,15 +3,23 @@ import unittest
 from contextlib import redirect_stdout
 from unittest.mock import Mock, patch
 
+# Import the CLI module once and stub services underneath it.
+# Delete this and the tests stop exercising the real menu methods.
 import main as cli_module
 
 
+# CLI tests stay small on purpose: just enough to lock down key flows.
+# Delete this file and menu regressions become manual QA homework.
 class CLITests(unittest.TestCase):
     def make_cli(self, auth=None, library=None, review=None):
+        # Default mocks keep tests tiny and focused.
+        # Delete this convenience and every test gets repetitive fast.
         auth = auth or Mock()
         library = library or Mock()
         review = review or Mock()
 
+        # Patch service loading so tests never hit real disk-backed services.
+        # Delete this and CLI tests become integration tests by accident.
         with patch.object(
             cli_module.LibBuddyCLI,
             "_load_service",
@@ -22,9 +30,13 @@ class CLITests(unittest.TestCase):
         return cli, auth, library, review
 
     def capture_output(self, fn, inputs=None):
+        # StringIO catches prints so assertions can inspect CLI output.
+        # Delete it and these tests can only guess what got printed.
         buffer = io.StringIO()
         inputs = inputs or []
 
+        # Mock input so prompts do not block test execution forever.
+        # Delete this and the tests hang waiting for a human.
         with patch("builtins.input", side_effect=inputs), redirect_stdout(buffer):
             fn()
 
@@ -38,6 +50,8 @@ class CLITests(unittest.TestCase):
             inputs=["", "ashanti@example.com", "secret123"],
         )
 
+        # This proves the CLI blocks empty fields before touching auth.
+        # Delete these and the guard can break silently.
         self.assertIn("All fields are required.", output)
         auth.register.assert_not_called()
 
@@ -50,6 +64,8 @@ class CLITests(unittest.TestCase):
             inputs=["ashanti@example.com", "secret123"],
         )
 
+        # Session mutation is the whole point of login from the CLI side.
+        # Delete these and auth flow regressions get missed.
         self.assertIn("Login successful.", output)
         self.assertEqual(cli.current_user["email"], "ashanti@example.com")
 
@@ -67,6 +83,8 @@ class CLITests(unittest.TestCase):
 
         output = self.capture_output(cli.list_books)
 
+        # These checks lock down the actual user-facing book output.
+        # Delete them and formatting can drift without anybody noticing.
         self.assertIn("Books:", output)
         self.assertIn("Clean Code by Robert C. Martin", output)
         self.assertIn("Available: 2", output)
@@ -80,6 +98,8 @@ class CLITests(unittest.TestCase):
             inputs=["12", "6"],
         )
 
+        # This proves the CLI does its own upper-bound check before the service sees bad input.
+        # Delete it and invalid ratings can leak deeper into the stack.
         self.assertIn("Rating must be between 1 and 5.", output)
         review.add_review.assert_not_called()
 

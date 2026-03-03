@@ -2,17 +2,25 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+# Patch the storage module directly so service tests never touch real app data.
+# Delete that strategy and tests start mutating repo JSON files. Absolutely not.
 import storage.json_store as json_store_module
 from services.auth_service import AuthService
 from services.library_service import LibraryService
 from services.review_service import ReviewService
 
 
+# This base case isolates every test inside a temp data directory.
+# Delete it and service tests become stateful, flaky, and rude to local data.
 class ServiceTestCase(unittest.TestCase):
     def setUp(self):
+        # Temp dir keeps file-backed tests disposable.
+        # Delete it and test runs start leaking files into the repo.
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
 
+        # Patch DATA_DIR so every JSONStore instance writes to temp space.
+        # Delete this and tests hit the real data folder. That would suck.
         self.data_dir_patcher = patch.object(json_store_module, "DATA_DIR", self.temp_dir.name)
         self.data_dir_patcher.start()
         self.addCleanup(self.data_dir_patcher.stop)
@@ -25,6 +33,8 @@ class AuthServiceTests(ServiceTestCase):
         created_user = service.register("Ashanti", "ashanti@example.com", "secret123")
         logged_in_user = service.login("ashanti@example.com", "secret123")
 
+        # First-user admin logic is easy to break in refactors, so it stays tested.
+        # Delete these and auth role/session regressions get sneaky.
         self.assertEqual(created_user["role"], "admin")
         self.assertEqual(logged_in_user["email"], "ashanti@example.com")
         self.assertEqual(service.get_current_user()["id"], created_user["id"])
@@ -44,6 +54,8 @@ class LibraryServiceTests(ServiceTestCase):
 
         results = service.search_books("clean")
 
+        # These asserts prove writes, reads, and filtering all still line up.
+        # Delete them and search can regress without getting noticed.
         self.assertEqual(created_book["available_copies"], 3)
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]["title"], "Clean Code")
@@ -57,6 +69,8 @@ class LibraryServiceTests(ServiceTestCase):
         updated_book = service.get_book(book["id"])
         records = service.view_all_borrow_records()
 
+        # This checks both side effects: stock and history.
+        # Delete it and one half of the borrow flow can break silently.
         self.assertTrue(borrowed)
         self.assertTrue(returned)
         self.assertEqual(updated_book["available_copies"], 2)
@@ -73,6 +87,8 @@ class ReviewServiceTests(ServiceTestCase):
         reviews = service.get_book_reviews(10)
         average = service.get_book_rating(10)
 
+        # This proves comment trimming and average math both still hold.
+        # Delete these and review summaries get less trustworthy.
         self.assertEqual(len(reviews), 2)
         self.assertEqual(reviews[0]["comment"], "Excellent")
         self.assertEqual(average, 4.0)
@@ -84,6 +100,8 @@ class ReviewServiceTests(ServiceTestCase):
 
         reviews = service.get_book_reviews(10)
 
+        # This blocks duplicate-review inflation from the same user.
+        # Delete these and that regression can sneak back in.
         self.assertEqual(first["id"], second["id"])
         self.assertEqual(len(reviews), 1)
         self.assertEqual(reviews[0]["rating"], 5)

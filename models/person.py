@@ -1,6 +1,8 @@
 """Base Person class for LibBuddy."""
 
 
+# This base model keeps shared name/email logic in one place.
+# Delete it and child models start duplicating the same validation mess.
 class Person:
     """Represents a person with name and email."""
 
@@ -11,8 +13,13 @@ class Person:
             name: The person's name
             email: The person's email address
         """
+        # Start blank so the setters do the real validation work.
+        # Delete this pattern and invalid constructor data can sneak in untouched.
         self._name = None
         self._email = None
+
+        # Route constructor input through the setters on purpose.
+        # Delete these lines and blank names / bad emails can bypass validation.
         self.name = name
         self.email = email
 
@@ -36,6 +43,8 @@ class Person:
     @email.setter
     def email(self, value: str) -> None:
         """Set the person's email."""
+        # This check is basic, but it still blocks obvious junk.
+        # Delete it and fake emails get stored like they are real.
         if "@" not in value or "." not in value:
             raise ValueError("Invalid email format.")
         self._email = value

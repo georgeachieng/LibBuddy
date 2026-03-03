@@ -1,3 +1,5 @@
+# These exports keep model imports predictable across the codebase.
+# Delete them and package-level model imports stop working cleanly.
 from .person import Person
 from .user import User
 from .book import Book

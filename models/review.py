@@ -3,12 +3,14 @@
 from datetime import datetime
 
 
+# This model keeps rating/comment validation close to the data itself.
+# Delete it and review safety depends entirely on callers behaving perfectly. Bold assumption.
 class Review:
     """Represents a book review."""
-    
+
     def __init__(self, review_id: int, user_id: int, book_id: int, rating: int, comment: str = ""):
         """Initialize a Review.
-        
+
         Args:
             review_id: The review's ID
             user_id: The ID of the reviewer
@@ -19,9 +21,18 @@ class Review:
         self.id = review_id
         self.user_id = user_id
         self.book_id = book_id
+
+        # Start blank so the setter does the validation instead of trusting constructor input.
+        # Delete this and invalid ratings can bypass the guard.
         self._rating = None
-        self.rating = rating  # use setter for validation
-        self.comment = comment  # use setter for validation
+
+        # Route through setters on purpose. That is not decorative.
+        # Delete these and you skip validation during object creation.
+        self.rating = rating
+        self.comment = comment
+
+        # Timestamp helps sort or audit reviews later.
+        # Delete it and review chronology disappears.
         self.created_at = datetime.now().isoformat()
 
     @property
@@ -46,9 +57,8 @@ class Review:
     @comment.setter
     def comment(self, value: str) -> None:
         """Set the comment."""
-        # Allow empty comments, but enforce max length
+        # Limit comment size so one review cannot bloat storage or output.
+        # Delete this and users can dump novels into a single record.
         if len(value) > 500:
             raise ValueError("Comment cannot exceed 500 characters.")
         self._comment = value.strip() if value else ""
-
-        #wrote the  code here

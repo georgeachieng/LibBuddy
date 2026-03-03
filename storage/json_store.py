@@ -1,84 +1,136 @@
-"""JSON file storage utility for LibBuddy.
-
-Person 3 scope - Stub implementation for CLI testing.
-"""
-
 import json
 import os
-from typing import Any
+from typing import List, Dict, Any, Optional
+
+# Central data dir keeps every JSON-backed feature writing to one predictable place.
+# Delete this and file paths start drifting into chaos.
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
 
-class JsonStore:
-    """Simple JSON file storage."""
+# This tiny storage layer is the repo's fake database.
+# Delete it and most services lose persistence immediately.
+class JSONStore:
+    def __init__(self, filename: str):
+        # Each store instance points at one concrete JSON file.
+        # Delete this and the class has no clue where to read or write.
+        self.filepath = os.path.join(DATA_DIR, filename)
 
-    def __init__(self, file_path: str) -> None:
-        self.file_path = file_path
-        self._ensure_file()
+        # Ensure the data folder exists before any write happens.
+        # Delete this and first-run writes fail on missing directories.
+        os.makedirs(DATA_DIR, exist_ok=True)
 
-    def _ensure_file(self) -> None:
-        """Create the file if it doesn't exist."""
-        if not os.path.exists(self.file_path):
-            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
-            with open(self.file_path, "w") as f:
-                json.dump([], f)
+        # Seed missing files with an empty list so reads have a sane shape.
+        # Remove this and first access can blow up or return weird state.
+        if not os.path.exists(self.filepath):
+            self._write([])
 
-    def load(self) -> list[dict[str, Any]]:
-        """Load all records from the JSON file."""
+    # Private read helper so all storage methods share the same error handling.
+    # Delete it and every caller has to reinvent file parsing.
+    def _read(self) -> List[Dict[str, Any]]:
         try:
-            with open(self.file_path, "r") as f:
+            # utf-8 keeps reads explicit and cross-platform safe enough.
+            # Delete encoding and you are back to default-behavior roulette.
+            with open(self.filepath, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
+        except FileNotFoundError:
+            # Missing file should behave like empty storage, not a crash.
+            # Delete this and startup becomes fragile.
+            return []
+        except json.JSONDecodeError:
+            # Corrupt JSON gets reset instead of poisoning the whole app.
+            # Delete this and one bad file bricks all dependent features.
+            self._write([])
             return []
 
-    def save(self, data: list[dict[str, Any]]) -> None:
-        """Save all records to the JSON file."""
-        with open(self.file_path, "w") as f:
-            json.dump(data, f, indent=2, default=str)
+    # Private write helper so formatting and encoding stay consistent.
+    # Delete it and every write path duplicates file logic.
+    def _write(self, data: List[Dict[str, Any]]) -> None:
+        with open(self.filepath, "w", encoding="utf-8") as f:
+            # indent=4 keeps the files human-readable for debugging and grading.
+            # Delete it and diffs get uglier, fast.
+            json.dump(data, f, indent=4)
 
-    def add(self, record: dict[str, Any]) -> dict[str, Any]:
-        """Add a new record."""
-        data = self.load()
-        # Auto-generate ID if not present
-        if "id" not in record:
-            max_id = max((r.get("id", 0) for r in data), default=0)
-            record["id"] = max_id + 1
+    # load exists mostly for compatibility with other branch code.
+    # Delete it and some older call sites stop working.
+    def load(self, filename: str = None) -> List[Dict[str, Any]]:
+        if filename:
+            # This lets one store temporarily read a different file if needed.
+            # Delete it and compatibility helpers lose flexibility.
+            store = JSONStore(filename)
+            return store.all()
+        return self.all()
+
+    # all is the canonical "give me every record" method.
+    # Delete it and the service layer loses its simplest read path.
+    def all(self) -> List[Dict[str, Any]]:
+        return self._read()
+
+    # save appends a record and assigns an id when needed.
+    # Delete it and no feature can create new persisted data.
+    def save(self, record: Dict[str, Any], auto_id: bool = True) -> Dict[str, Any]:
+        data = self._read()
+
+        # Auto ids keep storage simple without a real database.
+        # Remove this and callers have to manage every id manually.
+        if auto_id and "id" not in record:
+            record["id"] = self._generate_id(data)
+
         data.append(record)
-        self.save(data)
+        self._write(data)
         return record
 
-    def find_by_id(self, record_id: int) -> dict[str, Any] | None:
-        """Find a record by ID."""
-        data = self.load()
-        for record in data:
-            if record.get("id") == record_id:
-                return record
-        return None
-
-    def update(self, record_id: int, updates: dict[str, Any]) -> bool:
-        """Update a record by ID."""
-        data = self.load()
-        for record in data:
-            if record.get("id") == record_id:
-                record.update(updates)
-                self.save(data)
+    # update mutates one record in place by id.
+    # Delete it and edit flows for users/books/reviews stop working.
+    def update(self, record_id: int, updates: Dict[str, Any]) -> bool:
+        data = self._read()
+        for item in data:
+            if item.get("id") == record_id:
+                item.update(updates)
+                self._write(data)
                 return True
         return False
 
+    # delete removes one record by id.
+    # Delete it and cleanup flows leave dead data everywhere.
     def delete(self, record_id: int) -> bool:
-        """Delete a record by ID."""
-        data = self.load()
-        original_len = len(data)
-        data = [r for r in data if r.get("id") != record_id]
-        if len(data) < original_len:
-            self.save(data)
-            return True
-        return False
+        data = self._read()
+        new_data = [item for item in data if item.get("id") != record_id]
 
-    def find_by(self, **kwargs: Any) -> list[dict[str, Any]]:
-        """Find records matching all given criteria."""
-        data = self.load()
-        results = []
-        for record in data:
-            if all(record.get(k) == v for k, v in kwargs.items()):
-                results.append(record)
-        return results
+        # No size change means no matching record existed.
+        # Delete this check and you falsely report successful deletes.
+        if len(new_data) == len(data):
+            return False
+
+        self._write(new_data)
+        return True
+
+    # ID lookup is the fastest common read path in this project.
+    # Delete it and every service has to scan records manually.
+    def find_by_id(self, record_id: int) -> Optional[Dict[str, Any]]:
+        data = self._read()
+        for item in data:
+            if item.get("id") == record_id:
+                return item
+        return None
+
+    # Single-field lookup is a small convenience with big repetition savings.
+    # Delete it and services get cluttered with the same loops.
+    def find_by_field(self, field: str, value: Any) -> Optional[Dict[str, Any]]:
+        data = self._read()
+        for item in data:
+            if item.get(field) == value:
+                return item
+        return None
+
+    # Multi-match lookup supports history and filtered lists.
+    # Delete it and callers start writing the same list comprehension everywhere.
+    def find_all_by_field(self, field: str, value: Any) -> List[Dict[str, Any]]:
+        data = self._read()
+        return [item for item in data if item.get(field) == value]
+
+    # ID generation is the fake-auto-increment for this file-based setup.
+    # Delete it and new records collide or arrive without ids.
+    def _generate_id(self, data: List[Dict[str, Any]]) -> int:
+        if not data:
+            return 1
+        return max((item.get("id", 0) for item in data), default=0) + 1

@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from io import StringIO
 from unittest.mock import patch
 
 # Patch the storage module directly so service tests never touch real app data.
@@ -148,6 +149,42 @@ class LibraryServiceTests(ServiceTestCase):
         # Delete these and active-borrow filtering can drift without a warning.
         self.assertEqual(len(active_records), 1)
         self.assertEqual(active_records[0]["book_id"], second_book["id"])
+
+    def test_fetch_books_from_open_library_normalizes_results(self):
+        service = LibraryService()
+        fake_payload = StringIO(
+            '{"docs":[{"title":"Clean Architecture","author_name":["Robert C. Martin"],'
+            '"isbn":["9780134494166"],"first_publish_year":2017}]}'
+        )
+
+        # Mocking the network keeps this test fast and not weirdly dependent on Wi-Fi drama.
+        # Delete it and the suite starts failing over stuff outside the repo.
+        with patch("services.library_service.urlopen") as mock_urlopen:
+            mock_urlopen.return_value.__enter__.return_value = fake_payload
+            results = service.fetch_books_from_open_library("clean architecture", limit=3)
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["title"], "Clean Architecture")
+        self.assertEqual(results[0]["author"], "Robert C. Martin")
+        self.assertEqual(results[0]["isbn"], "9780134494166")
+
+    def test_import_books_skips_duplicates_and_saves_new_books(self):
+        service = LibraryService()
+        service.add_book("Clean Code", "Robert C. Martin", "9780132350884", 2)
+
+        summary = service.import_books(
+            [
+                {"title": "Clean Code", "author": "Robert C. Martin", "isbn": "9780132350884"},
+                {"title": "Domain-Driven Design", "author": "Eric Evans", "isbn": "9780321125217"},
+            ],
+            total_copies=3,
+        )
+
+        # One duplicate and one clean import is the exact edge case this feature can mess up.
+        # Delete these and duplicate detection can rot quietly.
+        self.assertEqual(len(summary["imported"]), 1)
+        self.assertEqual(len(summary["skipped"]), 1)
+        self.assertEqual(summary["imported"][0]["title"], "Domain-Driven Design")
 
 
 class ReviewServiceTests(ServiceTestCase):

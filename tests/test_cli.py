@@ -93,7 +93,7 @@ class CLITests(unittest.TestCase):
         self.assertIn("Books:", output)
         self.assertIn("Clean Code", output)
         self.assertIn("Robert C. Martin", output)
-        self.assertIn("Available: 2", output)
+        self.assertIn("2/2", output)
 
     def test_add_review_rejects_rating_above_five_before_calling_service(self):
         cli, _, library, review = self.make_cli()
@@ -142,6 +142,39 @@ class CLITests(unittest.TestCase):
             role="admin",
             username="joyburgei",
         )
+
+    def test_import_books_from_api_calls_service_with_selected_results(self):
+        cli, _, library, _ = self.make_cli()
+        cli.current_user = {"id": 1, "role": "admin"}
+        library.fetch_books_from_open_library.return_value = [
+            {
+                "result_id": 1,
+                "title": "Clean Architecture",
+                "author": "Robert C. Martin",
+                "isbn": "9780134494166",
+                "first_publish_year": 2017,
+            },
+            {
+                "result_id": 2,
+                "title": "Domain-Driven Design",
+                "author": "Eric Evans",
+                "isbn": "9780321125217",
+                "first_publish_year": 2003,
+            },
+        ]
+        library.import_books.return_value = {"imported": [{"title": "Clean Architecture"}], "skipped": []}
+
+        output = self.capture_output(
+            cli.import_books_from_api,
+            inputs=["clean", "2", "1", "3"],
+        )
+
+        # This locks down the full admin import flow without touching the real network.
+        # Delete it and API import can drift while the test suite says nothing.
+        self.assertIn("Open Library Results:", output)
+        self.assertIn("Imported 1 book(s).", output)
+        library.fetch_books_from_open_library.assert_called_once_with("clean", 2)
+        library.import_books.assert_called_once()
 
     def test_my_current_borrows_prints_active_record_count(self):
         cli, _, library, _ = self.make_cli()

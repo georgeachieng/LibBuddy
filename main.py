@@ -234,10 +234,60 @@ class LibBuddyCLI:
     # One tiny helper keeps menus compact without making them cryptic.
     # Delete it and the CLI goes back to repeating the same print boilerplate everywhere.
     def _show_menu(self, title: str, options: list[str]) -> str:
-        print(f"\n=== {title} ===")
+        print("\n" + "=" * 72)
+        print(title.center(72))
+        print("=" * 72)
         for index, option in enumerate(options, start=1):
             print(f"{index}. {option}")
         return self._get_input("Select an option: ")
+
+    # This keeps table output readable without dragging in a package just for tests and fallback mode.
+    # Delete it and every list screen goes back to uneven, scroll-heavy print spam.
+    @staticmethod
+    def _print_table(headers: list[str], rows: list[list[Any]]) -> None:
+        if not rows:
+            return
+
+        normalized = [[str(cell) for cell in row] for row in rows]
+        widths = [
+            max(len(str(header)), *(len(row[index]) for row in normalized))
+            for index, header in enumerate(headers)
+        ]
+
+        # One renderer keeps the header and body aligned instead of drifting by accident.
+        # Delete it and the table math gets duplicated immediately.
+        def render(row: list[str]) -> str:
+            return " | ".join(cell.ljust(widths[index]) for index, cell in enumerate(row))
+
+        print(render(headers))
+        print("-+-".join("-" * width for width in widths))
+        for row in normalized:
+            print(render(row))
+
+    # A small stats panel makes the landing screen feel like an actual app, not a blank prompt farm.
+    # Delete it and the first impression gets a lot flatter again.
+    def _show_welcome_panel(self) -> None:
+        try:
+            book_count = len(self._call(self.library_service, ["list_books", "get_books", "all_books"]))
+        except ServiceNotReadyError:
+            book_count = 0
+
+        try:
+            user_count = len(self._call(self.auth_service, ["list_users", "all_users", "get_all_users"]))
+        except ServiceNotReadyError:
+            user_count = 0
+
+        try:
+            review_count = len(self._call(self.review_service, ["list_all_reviews", "all_reviews"]))
+        except ServiceNotReadyError:
+            review_count = 0
+
+        print("\n" + "=" * 72)
+        print("LIBBUDDY".center(72))
+        print("CLI Library Desk".center(72))
+        print("=" * 72)
+        print(f"Catalog: {book_count} books | Members: {user_count} users | Reviews: {review_count}")
+        print("-" * 72)
 
     # This handles all book list output in one place.
     # Delete it and every book-printing path grows its own messy formatting logic.
@@ -249,17 +299,21 @@ class LibBuddyCLI:
             return
 
         print("\nBooks:")
+        rows = []
         for book in books:
             # Normalize each item before grabbing fields.
             # Delete this and object-based responses stop printing correctly.
             b = self._to_dict(book)
-            print(
-                f"- [{self._get_field(b, 'id', 'book_id')}] "
-                f"{shorten(str(self._get_field(b, 'title')), width=32, placeholder='...')} | "
-                f"{shorten(str(self._get_field(b, 'author')), width=20, placeholder='...')} | "
-                f"ISBN: {self._get_field(b, 'isbn')} | "
-                f"Available: {self._get_field(b, 'available_copies')}/{self._get_field(b, 'total_copies')}"
+            rows.append(
+                [
+                    self._get_field(b, "id", "book_id"),
+                    shorten(str(self._get_field(b, "title")), width=30, placeholder="..."),
+                    shorten(str(self._get_field(b, "author")), width=20, placeholder="..."),
+                    self._get_field(b, "isbn"),
+                    f"{self._get_field(b, 'available_copies')}/{self._get_field(b, 'total_copies', default=self._get_field(b, 'available_copies'))}",
+                ]
             )
+        self._print_table(["ID", "Title", "Author", "ISBN", "Stock"], rows)
 
     # Same deal as books, but for borrow history and admin record views.
     # Remove it and record output turns into copy-paste soup.
@@ -269,18 +323,22 @@ class LibBuddyCLI:
             return
 
         print("\nBorrow Records:")
+        rows = []
         for record in records:
             # Normalize the shape before field lookup so records from different branches still print.
             # Delete this and mixed return types become a runtime headache.
             r = self._to_dict(record)
-            print(
-                f"- #{self._get_field(r, 'id', 'record_id')} | "
-                f"User: {self._get_user_label(self._get_field(r, 'user_id'))} | "
-                f"Book: {self._get_book_label(self._get_field(r, 'book_id'))} | "
-                f"Status: {self._get_field(r, 'status')} | "
-                f"Borrowed: {self._format_timestamp(self._get_field(r, 'borrowed_at'))} | "
-                f"Returned: {self._format_timestamp(self._get_field(r, 'returned_at', default='-'))}"
+            rows.append(
+                [
+                    self._get_field(r, "id", "record_id"),
+                    self._get_user_label(self._get_field(r, "user_id")),
+                    self._get_book_label(self._get_field(r, "book_id")),
+                    self._get_field(r, "status"),
+                    self._format_timestamp(self._get_field(r, "borrowed_at")),
+                    self._format_timestamp(self._get_field(r, "returned_at", default="-")),
+                ]
             )
+        self._print_table(["ID", "User", "Book", "Status", "Borrowed", "Returned"], rows)
 
     # Registration wires the CLI prompt layer to the auth service.
     # Delete this and new users are locked out before the app even starts being useful.
@@ -615,14 +673,88 @@ class LibBuddyCLI:
             return
 
         print("\nUsers:")
+        rows = []
         for user in users:
-            print(
-                f"- ID: {self._get_field(user, 'id', 'user_id')} | "
-                f"Username: {self._get_field(user, 'username')} | "
-                f"Name: {self._get_field(user, 'name')} | "
-                f"Email: {self._get_field(user, 'email')} | "
-                f"Role: {self._get_field(user, 'role')}"
+            rows.append(
+                [
+                    self._get_field(user, "id", "user_id"),
+                    self._get_field(user, "username"),
+                    self._get_field(user, "name"),
+                    self._get_field(user, "email"),
+                    self._get_field(user, "role"),
+                ]
             )
+        self._print_table(["ID", "Username", "Name", "Email", "Role"], rows)
+
+    # API import gives admins a fast way to seed the catalog with real books.
+    # Delete it and "fetch books" is just a thing we said, not a thing we built.
+    @role_required("admin")
+    def import_books_from_api(self) -> None:
+        print("\n=== Import Books From Open Library ===")
+        query = self._get_input("Search query: ")
+        if not query:
+            print("Enter something to search for.")
+            return
+
+        limit_raw = self._get_input("How many results? [default: 5]: ")
+        limit = 5
+        if limit_raw:
+            try:
+                limit = max(1, min(10, int(limit_raw)))
+            except ValueError:
+                print("Enter a valid number.")
+                return
+
+        results = self._call(self.library_service, ["fetch_books_from_open_library"], query, limit)
+        if not results:
+            print("No books came back from Open Library.")
+            return
+
+        rows = [
+            [
+                item.get("result_id"),
+                shorten(item.get("title", "Untitled"), width=32, placeholder="..."),
+                shorten(item.get("author", "Unknown"), width=20, placeholder="..."),
+                item.get("first_publish_year") or "-",
+                item.get("isbn") or "-",
+            ]
+            for item in results
+        ]
+        print("\nOpen Library Results:")
+        self._print_table(["No", "Title", "Author", "Year", "ISBN"], rows)
+
+        selection = self._get_input("Import which results? Use comma list, 'all', or blank to cancel: ")
+        if not selection:
+            print("Import cancelled.")
+            return
+
+        if selection.lower() == "all":
+            selected = results
+        else:
+            try:
+                wanted = {int(piece.strip()) for piece in selection.split(",") if piece.strip()}
+            except ValueError:
+                print("Use numbers separated by commas.")
+                return
+            selected = [item for item in results if item.get("result_id") in wanted]
+
+        if not selected:
+            print("No valid API results selected.")
+            return
+
+        copies_raw = self._get_input("Copies per imported book [default: 2]: ")
+        copies = 2
+        if copies_raw:
+            try:
+                copies = max(1, int(copies_raw))
+            except ValueError:
+                print("Enter a valid number.")
+                return
+
+        summary = self._call(self.library_service, ["import_books"], selected, copies)
+        print(f"Imported {len(summary.get('imported', []))} book(s).")
+        if summary.get("skipped"):
+            print(f"Skipped {len(summary['skipped'])} duplicate or invalid result(s).")
 
     # Admin account creation keeps role management inside the app instead of in raw JSON edits.
     # Delete it and adding a second admin goes back to manual file surgery.
@@ -851,17 +983,22 @@ class LibBuddyCLI:
     # Delete it and admin flow goes back to dumping every action at once.
     def catalog_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("Catalog", ["Browse books", "Add book", "Update copies", "Remove book", "Back"])
+            choice = self._show_menu(
+                "Catalog",
+                ["Browse books", "Add book", "Import from Open Library", "Update copies", "Remove book", "Back"],
+            )
 
             if choice == "1":
                 self.list_books()
             elif choice == "2":
                 self.add_book()
             elif choice == "3":
-                self.update_book_copies()
+                self.import_books_from_api()
             elif choice == "4":
-                self.delete_book()
+                self.update_book_copies()
             elif choice == "5":
+                self.delete_book()
+            elif choice == "6":
                 return
             else:
                 print("Invalid option. Try again.")
@@ -900,17 +1037,19 @@ class LibBuddyCLI:
             return
 
         print("\nRecent Reviews:")
+        rows = []
         for review in reviews[:10]:
             r = self._to_dict(review)
-            print(
-                f"- {self._get_book_label(self._get_field(r, 'book_id'))} | "
-                f"{self._get_user_label(self._get_field(r, 'user_id'))} | "
-                f"{self._get_field(r, 'rating')}/5 | "
-                f"{self._format_timestamp(self._get_field(r, 'created_at', default='-'))}"
+            rows.append(
+                [
+                    self._get_book_label(self._get_field(r, "book_id")),
+                    self._get_user_label(self._get_field(r, "user_id")),
+                    f"{self._get_field(r, 'rating')}/5",
+                    self._format_timestamp(self._get_field(r, "created_at", default="-")),
+                    shorten(str(self._get_field(r, "comment", default="")), width=36, placeholder="..."),
+                ]
             )
-            comment = self._get_field(r, "comment", default="")
-            if comment and comment != "-":
-                print(f"  \"{comment}\"")
+        self._print_table(["Book", "User", "Rating", "Created", "Comment"], rows)
 
     # User menu keeps looping until logout.
     # Delete this and regular users have nowhere to actually use the app.
@@ -970,6 +1109,7 @@ class LibBuddyCLI:
     # Delete it and the CLI boots with no usable entry path.
     def run(self) -> None:
         while True:
+            self._show_welcome_panel()
             choice = self._show_menu("Welcome to LibBuddy", ["Register", "Login", "Exit"])
 
             try:

@@ -1,62 +1,62 @@
 [
     {
         "id": 1,
-        "name": "Ashanti Kweyu",
-        "username": "ashantikweyu",
-        "email": "ashanti.admin@libbuddy.com",
-        "role": "admin",
-        "salt": "7ee18af0a5f8ca76818aee0bf4553061",
-        "password_hash": "2676acbde84bc9041f39d354f3576f2add4c71b2622599432aa61925ea4ba63b",
-        "created_at": "2026-03-03T16:00:00"
-    },
-    {
-        "id": 2,
         "name": "Joy Burgei",
         "username": "joyburgei",
         "email": "joy.admin@libbuddy.com",
         "role": "admin",
-        "salt": "e65af8667b289f36452fb47231168583",
-        "password_hash": "4ca53429e2c3bf788d53371c849ec7c53cdb03ec64bd51a0dff4920709e654d8",
+        "salt": "8b4aea5f170cef508a2d6bf37f89db9a",
+        "password_hash": "6329f57b439abeb95c8fccd0be310d4ddb328088a27a7ec00b386d1b47042576",
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 3,
+        "id": 2,
         "name": "George Achieng",
         "username": "georgeachieng",
         "email": "george.admin@libbuddy.com",
         "role": "admin",
-        "salt": "0987e56f8826343dc345249481cefc35",
-        "password_hash": "e6baf05e903e9dff2461485da4723ee0163b5dc034891f6f682af7312cfa0a1e",
+        "salt": "a45cabaa9d8e0991cd84fdc2e580d1f0",
+        "password_hash": "803d7af525d89ef6a7de7822b245527458942d41e370dec59b4be89072896c72",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 3,
+        "name": "Elvis Rob Yampoy",
+        "username": "elvisyampoy",
+        "email": "elvis.admin@libbuddy.com",
+        "role": "admin",
+        "salt": "a1de597d574be212f48885d5643a860d",
+        "password_hash": "064157f419e928762eacdc724784013e0f52519c5e697799bdf78a92866bf8f4",
         "created_at": "2026-03-03T16:00:00"
     },
     {
         "id": 4,
-        "name": "Elvis Yampoy",
-        "username": "elvisyampoy",
-        "email": "elvis.admin@libbuddy.com",
+        "name": "George Okumu",
+        "username": "georgeokumu",
+        "email": "george.okumu.admin@libbuddy.com",
         "role": "admin",
-        "salt": "ae0b17905c1bd7b3c5f43a714218769d",
-        "password_hash": "63ca15932c9c7326d26cd1d078b00814cd63bf41559b5e560b8e1cf19b763b7e",
+        "salt": "eeca96676d1f1395cd8ce63651328ef0",
+        "password_hash": "dafad8397efdf76d75c499976b97fad96b210775d4ed00105c3b7835c9a76cb8",
         "created_at": "2026-03-03T16:00:00"
     },
     {
         "id": 5,
-        "name": "John Doe",
-        "username": "johndoe",
-        "email": "john@example.com",
+        "name": "Abdala Bakari",
+        "username": "abdalabakari",
+        "email": "abdala@libbuddy.com",
         "role": "user",
-        "salt": "b5393198dddb89938f49f41f9454fa91",
-        "password_hash": "4d3513d3ac1efa2bf2178c675bef8d3683e8fcaf24a44347d3d2db387662eadb",
+        "salt": "435bef7e262afb9deaa14c7efa07da16",
+        "password_hash": "239441113803e22aca4cb5d57b5d51023fcd354da6ab656f9f261dbe56fd87e5",
         "created_at": "2026-03-03T16:00:00"
     },
     {
         "id": 6,
-        "name": "Aisha Hassan",
-        "username": "aishahassan",
-        "email": "aisha@example.com",
+        "name": "Abigael Ongwae",
+        "username": "abigaelongwae",
+        "email": "abigael@libbuddy.com",
         "role": "user",
-        "salt": "a6696d7e3fd86c69913453a379552402",
-        "password_hash": "1b99e48e5eb6b98fba14f98daf05f3e9da48cf40a4bd3f78d0a1d12d95dfa29d",
+        "salt": "6f37ad1cd6ef010abb56c3ea9f8da922",
+        "password_hash": "1a647b50040549375cb4d885440238a5471f3cab1a8262024406fa96dbc8db93",
         "created_at": "2026-03-03T16:00:00"
     }
 ]

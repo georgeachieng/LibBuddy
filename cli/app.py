@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+# sys gives us the terminal handles for masked password input.
+# Delete it and the CLI cannot tell whether it's running in a real terminal.
+import sys
 # These imports power the CLI's "work with whatever teammate code exists" trick.
 # Kill them and the app either stops normalizing objects or straight-up fails to load services.
 from datetime import datetime
@@ -116,6 +119,65 @@ class LibBuddyCLI:
     @staticmethod
     def _get_input(prompt: str) -> str:
         return input(prompt).strip()
+
+    # This masks passwords with stars in a real terminal so people are not typing secrets in public.
+    # Delete it and password entry stays fully visible, which is sloppy for demos and real use.
+    def _get_password_input(self, prompt: str) -> str:
+        # Tests and non-interactive runs do not have a proper TTY, so fall back cleanly there.
+        # Delete this and the suite starts hanging or failing on terminal-only logic.
+        if not sys.stdin.isatty() or not sys.stdout.isatty():
+            return self._get_input(prompt)
+
+        if sys.platform == "win32":
+            import msvcrt
+
+            print(prompt, end="", flush=True)
+            chars: list[str] = []
+            while True:
+                key = msvcrt.getwch()
+                if key in ("\r", "\n"):
+                    print()
+                    return "".join(chars).strip()
+                if key == "\003":
+                    raise KeyboardInterrupt
+                if key == "\b":
+                    if chars:
+                        chars.pop()
+                        print("\b \b", end="", flush=True)
+                    continue
+                if key in ("\x00", "\xe0"):
+                    msvcrt.getwch()
+                    continue
+                chars.append(key)
+                print("*", end="", flush=True)
+
+        # termios/tty gives Unix terminals raw character reads so we can paint one star per key.
+        # Delete this path and Linux/macOS users lose the masking feature entirely.
+        import termios
+        import tty
+
+        print(prompt, end="", flush=True)
+        chars: list[str] = []
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            while True:
+                key = sys.stdin.read(1)
+                if key in ("\r", "\n"):
+                    print()
+                    return "".join(chars).strip()
+                if key == "\x03":
+                    raise KeyboardInterrupt
+                if key in ("\x7f", "\b"):
+                    if chars:
+                        chars.pop()
+                        print("\b \b", end="", flush=True)
+                    continue
+                chars.append(key)
+                print("*", end="", flush=True)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
     # This loop keeps numeric prompts from exploding on bad input.
     # Delete it and one typo turns into a crash or bad data sneaking through.
@@ -362,7 +424,9 @@ class LibBuddyCLI:
         name = self._get_input("Name: ")
         username = self._get_input("Username: ")
         email = self._get_input("Email: ")
-        password = self._get_input("Password: ")
+        # Use the masked prompt here because registration is the first place people expose passwords.
+        # Delete it and new-account demos still leak the password on screen.
+        password = self._get_password_input("Password: ")
 
         # Basic presence checks stop trash input before it reaches the service layer.
         # Remove this and you lean entirely on downstream exceptions for user-facing flow.
@@ -408,7 +472,9 @@ class LibBuddyCLI:
     def login(self) -> None:
         print("\n=== Login ===")
         email = self._get_input("Email or username: ")
-        password = self._get_input("Password: ")
+        # Login needs the same masking or the fix is only half real.
+        # Delete it and the most common password prompt stays visible.
+        password = self._get_password_input("Password: ")
 
         if not (email and password):
             print("Enter both your email or username and your password.")
@@ -779,7 +845,9 @@ class LibBuddyCLI:
         name = self._get_input("Name: ")
         username = self._get_input("Username: ")
         email = self._get_input("Email: ")
-        password = self._get_input("Password: ")
+        # Admin creation handles credentials too, so it gets the masked prompt as well.
+        # Delete it and only some password screens get the privacy upgrade.
+        password = self._get_password_input("Password: ")
 
         if not (name and username and email and password):
             print("Please fill in every field.")

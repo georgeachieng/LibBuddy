@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import builtins
 import sys
 from datetime import datetime
 from dataclasses import asdict, is_dataclass
@@ -15,11 +16,34 @@ except ImportError:  # pragma: no cover
     tabulate = None
 
 
+PRINT_INDENT = "    "
+_PRINT_AT_LINE_START = True
+
+
+def print(*args: Any, sep: str = " ", end: str = "\n", file=None, flush: bool = False) -> None:
+    global _PRINT_AT_LINE_START
+
+    if file is not None:
+        builtins.print(*args, sep=sep, end=end, file=file, flush=flush)
+        return
+
+    text = sep.join(str(arg) for arg in args)
+    if text:
+        if _PRINT_AT_LINE_START:
+            text = f"{PRINT_INDENT}{text}"
+        text = text.replace("\n", f"\n{PRINT_INDENT}")
+
+    builtins.print(text, end=end, flush=flush)
+    _PRINT_AT_LINE_START = end.endswith("\n")
+
+
 class ServiceNotReadyError(RuntimeError):
     """Raised when expected teammate service methods are missing."""
 
 
 class LibBuddyCLI:
+    INDENT = "    "
+
     def __init__(self) -> None:
         self.auth_service = self._load_service("services.auth_service", "AuthService")
         self.library_service = self._load_service("services.library_service", "LibraryService")
@@ -66,8 +90,10 @@ class LibBuddyCLI:
 
         return {"value": item}
 
-    @staticmethod
-    def _get_input(prompt: str) -> str:
+    def _line(self, text: str = "") -> None:
+        print(text)
+
+    def _get_input(self, prompt: str) -> str:
         return input(prompt).strip()
 
     def _get_password_input(self, prompt: str) -> str:
@@ -123,9 +149,11 @@ class LibBuddyCLI:
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
-    def _prompt_int(self, prompt: str, min_value: int | None = None) -> int:
+    def _prompt_int(self, prompt: str, min_value: int | None = None, allow_cancel: bool = False) -> int | None:
         while True:
             raw = self._get_input(prompt)
+            if allow_cancel and raw.lower() in {"b", "back", "cancel"}:
+                return None
             try:
                 value = int(raw)
 
@@ -176,7 +204,10 @@ class LibBuddyCLI:
 
         return f"Book {book_id}"
 
-    def _get_user_label(self, user_id: Any) -> str:
+    def _get_user_label(self, user_id: Any, fallback_name: Any = None) -> str:
+        if fallback_name not in (None, ""):
+            return str(fallback_name)
+
         try:
             user = self._call(self.auth_service, ["get_user_by_id"], int(user_id))
         except (ServiceNotReadyError, TypeError, ValueError):
@@ -217,20 +248,23 @@ class LibBuddyCLI:
         return reviewable
 
     def _show_menu(self, title: str, options: list[str]) -> str:
-        print("\n" + "=" * 72)
-        print(title.center(72))
-        print("=" * 72)
+        self._line()
+        self._line("=" * 72)
+        self._line(title.center(72))
+        self._line("=" * 72)
+        print()
         for index, option in enumerate(options, start=1):
-            print(f"{index}. {option}")
+            self._line(f"{index}. {option}")
+        print()
         return self._get_input("Select an option: ")
 
-    @staticmethod
-    def _print_table(headers: list[str], rows: list[list[Any]]) -> None:
+    def _print_table(self, headers: list[str], rows: list[list[Any]]) -> None:
         if not rows:
             return
 
         if tabulate is not None:
-            print(tabulate(rows, headers=headers, tablefmt="fancy_grid"))
+            for line in tabulate(rows, headers=headers, tablefmt="fancy_grid").splitlines():
+                self._line(line)
             return
 
         normalized = [[str(cell) for cell in row] for row in rows]
@@ -242,10 +276,10 @@ class LibBuddyCLI:
         def render(row: list[str]) -> str:
             return " | ".join(cell.ljust(widths[index]) for index, cell in enumerate(row))
 
-        print(render(headers))
-        print("-+-".join("-" * width for width in widths))
+        self._line(render(headers))
+        self._line("-+-".join("-" * width for width in widths))
         for row in normalized:
-            print(render(row))
+            self._line(render(row))
 
     def _show_welcome_panel(self) -> None:
         try:
@@ -263,12 +297,13 @@ class LibBuddyCLI:
         except ServiceNotReadyError:
             review_count = 0
 
-        print("\n" + "=" * 72)
-        print("LIBBUDDY 📚".center(72))
-        print("CLI Library Desk".center(72))
-        print("=" * 72)
-        print(f"Catalog: {book_count} books | Members: {user_count} users | Reviews: {review_count} ⭐")
-        print("-" * 72)
+        self._line()
+        self._line("=" * 72)
+        self._line("LIBBUDDY 📚".center(72))
+        self._line("CLI Library Desk".center(72))
+        self._line("=" * 72)
+        self._line(f"Catalog: {book_count} books | Members: {user_count} users | Reviews: {review_count} ⭐")
+        self._line("-" * 72)
 
     def _print_books(self, books: list[Any]) -> None:
         if not books:
@@ -302,7 +337,10 @@ class LibBuddyCLI:
             rows.append(
                 [
                     self._get_field(r, "id", "record_id"),
-                    self._get_user_label(self._get_field(r, "user_id")),
+                    self._get_user_label(
+                        self._get_field(r, "user_id"),
+                        self._get_field(r, "borrower_name", default=None),
+                    ),
                     self._get_book_label(self._get_field(r, "book_id")),
                     self._get_field(r, "status"),
                     self._format_timestamp(self._get_field(r, "borrowed_at")),
@@ -470,7 +508,10 @@ class LibBuddyCLI:
     @login_required
     def borrow_book(self) -> None:
         user_id = self._get_current_user_id()
-        book_id = self._prompt_int("Book ID to borrow: ", min_value=1)
+        book_id = self._prompt_int("Book ID to borrow (or 'back'): ", min_value=1, allow_cancel=True)
+        if book_id is None:
+            print("Borrow cancelled.")
+            return
 
         try:
             ok = self._call(
@@ -495,7 +536,10 @@ class LibBuddyCLI:
     @login_required
     def return_book(self) -> None:
         user_id = self._get_current_user_id()
-        book_id = self._prompt_int("Book ID to return: ", min_value=1)
+        book_id = self._prompt_int("Book ID to return (or 'back'): ", min_value=1, allow_cancel=True)
+        if book_id is None:
+            print("Return cancelled.")
+            return
 
         try:
             ok = self._call(
@@ -833,7 +877,9 @@ class LibBuddyCLI:
         print("\n=== Review Details ===")
         print(f"Review ID: {self._get_field(review_dict, 'id')}")
         print(f"Book: {self._get_book_label(self._get_field(review_dict, 'book_id'))}")
-        print(f"User: {self._get_user_label(self._get_field(review_dict, 'user_id'))}")
+        print(
+            f"User: {self._get_user_label(self._get_field(review_dict, 'user_id'), self._get_field(review_dict, 'reviewer_name', default=None))}"
+        )
         print(f"Rating: {self._get_field(review_dict, 'rating')}/5")
         print(f"Created: {self._format_timestamp(self._get_field(review_dict, 'created_at', default='-'))}")
         comment = self._get_field(review_dict, "comment", default="")
@@ -880,7 +926,7 @@ class LibBuddyCLI:
 
             stars = "*" * self._get_field(r, "rating", default=0)
             print(
-                f"  #{self._get_field(r, 'id')} | {self._get_user_label(self._get_field(r, 'user_id'))} | "
+                f"  #{self._get_field(r, 'id')} | {self._get_user_label(self._get_field(r, 'user_id'), self._get_field(r, 'reviewer_name', default=None))} | "
                 f"{stars} ({self._get_field(r, 'rating')}/5) | "
                 f"{self._format_timestamp(self._get_field(r, 'created_at', default='-'))}"
             )
@@ -1008,7 +1054,10 @@ class LibBuddyCLI:
                 [
                     self._get_field(r, "id"),
                     self._get_book_label(self._get_field(r, "book_id")),
-                    self._get_user_label(self._get_field(r, "user_id")),
+                    self._get_user_label(
+                        self._get_field(r, "user_id"),
+                        self._get_field(r, "reviewer_name", default=None),
+                    ),
                     f"{self._get_field(r, 'rating')}/5",
                     self._format_timestamp(self._get_field(r, "created_at", default="-")),
                     shorten(str(self._get_field(r, "comment", default="")), width=36, placeholder="..."),

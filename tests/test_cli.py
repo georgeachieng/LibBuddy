@@ -202,6 +202,18 @@ class CLITests(unittest.TestCase):
         self.assertIn("Currently Borrowed Books (1/3 limit):", output)
         self.assertIn("Refactoring", output)
 
+    def test_borrow_book_allows_back_without_calling_service(self):
+        cli, _, library, _ = self.make_cli()
+        cli.current_user = {"id": 4, "role": "user"}
+
+        output = self.capture_output(
+            cli.borrow_book,
+            inputs=["back"],
+        )
+
+        self.assertIn("Borrow cancelled.", output)
+        library.borrow_book.assert_not_called()
+
     def test_add_review_requires_book_from_borrow_history(self):
         cli, _, library, review = self.make_cli()
         cli.current_user = {"id": 4, "role": "user"}

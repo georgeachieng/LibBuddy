@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from datetime import datetime
 from dataclasses import asdict, is_dataclass
 from importlib import import_module
@@ -68,6 +69,59 @@ class LibBuddyCLI:
     @staticmethod
     def _get_input(prompt: str) -> str:
         return input(prompt).strip()
+
+    def _get_password_input(self, prompt: str) -> str:
+        if not sys.stdin.isatty() or not sys.stdout.isatty():
+            return self._get_input(prompt)
+
+        if sys.platform == "win32":
+            import msvcrt
+
+            print(prompt, end="", flush=True)
+            chars: list[str] = []
+            while True:
+                key = msvcrt.getwch()
+                if key in ("\r", "\n"):
+                    print()
+                    return "".join(chars).strip()
+                if key == "\003":
+                    raise KeyboardInterrupt
+                if key == "\b":
+                    if chars:
+                        chars.pop()
+                        print("\b \b", end="", flush=True)
+                    continue
+                if key in ("\x00", "\xe0"):
+                    msvcrt.getwch()
+                    continue
+                chars.append(key)
+                print("*", end="", flush=True)
+
+        import termios
+        import tty
+
+        print(prompt, end="", flush=True)
+        chars: list[str] = []
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            while True:
+                key = sys.stdin.read(1)
+                if key in ("\r", "\n"):
+                    print()
+                    return "".join(chars).strip()
+                if key == "\x03":
+                    raise KeyboardInterrupt
+                if key in ("\x7f", "\b"):
+                    if chars:
+                        chars.pop()
+                        print("\b \b", end="", flush=True)
+                    continue
+                chars.append(key)
+                print("*", end="", flush=True)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
     def _prompt_int(self, prompt: str, min_value: int | None = None) -> int:
         while True:
@@ -262,7 +316,7 @@ class LibBuddyCLI:
         name = self._get_input("Name: ")
         username = self._get_input("Username: ")
         email = self._get_input("Email: ")
-        password = self._get_input("Password: ")
+        password = self._get_password_input("Password: ")
 
         if not (name and username and email and password):
             print("Please fill in every field.")
@@ -298,7 +352,7 @@ class LibBuddyCLI:
     def login(self) -> None:
         print("\n=== Login ===")
         email = self._get_input("Email or username: ")
-        password = self._get_input("Password: ")
+        password = self._get_password_input("Password: ")
 
         if not (email and password):
             print("Enter both your email or username and your password.")
@@ -619,7 +673,7 @@ class LibBuddyCLI:
         name = self._get_input("Name: ")
         username = self._get_input("Username: ")
         email = self._get_input("Email: ")
-        password = self._get_input("Password: ")
+        password = self._get_password_input("Password: ")
 
         if not (name and username and email and password):
             print("Please fill in every field.")

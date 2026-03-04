@@ -16,6 +16,7 @@ LibBuddy is a Python CLI library system with:
 libbuddy/
   main.py
   README.md
+  cli/
   data/
     users.json
     books.json

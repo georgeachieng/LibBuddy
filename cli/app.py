@@ -360,10 +360,10 @@ class LibBuddyCLI:
             review_count = 0
 
         print("\n" + "=" * 72)
-        print("LIBBUDDY".center(72))
+        print("LIBBUDDY 📚".center(72))
         print("CLI Library Desk".center(72))
         print("=" * 72)
-        print(f"Catalog: {book_count} books | Members: {user_count} users | Reviews: {review_count}")
+        print(f"Catalog: {book_count} books | Members: {user_count} users | Reviews: {review_count} ⭐")
         print("-" * 72)
 
     # This handles all book list output in one place.
@@ -463,7 +463,7 @@ class LibBuddyCLI:
         # This success branch is the only user feedback proving account creation worked.
         # Delete it and the CLI feels broken even when it succeeds.
         if created:
-            print("Account created. You can log in now.")
+            print("Account created. You can log in now. ✅")
         else:
             print("Could not create the account.")
 
@@ -511,7 +511,7 @@ class LibBuddyCLI:
         # This is the actual session handoff.
         # Delete it and every post-login feature thinks nobody is logged in.
         self.current_user = user
-        print(f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}.")
+        print(f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}. 👋")
 
     # Logout clears both the service session and the CLI session.
     # Delete it and users can get stuck "logged in" until restart.
@@ -640,7 +640,7 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book borrowed.")
+            print("Book borrowed. ✅")
         else:
             print("Could not borrow that book.")
 
@@ -667,7 +667,7 @@ class LibBuddyCLI:
             )
 
         if ok:
-            print("Book returned.")
+            print("Book returned. ✅")
         else:
             print("Could not return that book.")
 
@@ -999,7 +999,7 @@ class LibBuddyCLI:
             return
 
         if review:
-            print("Review saved.")
+            print("Review saved. ⭐")
         else:
             print("Could not save the review.")
 
@@ -1123,7 +1123,7 @@ class LibBuddyCLI:
     # Delete it and the user menu goes back to being a long grocery list.
     def reviews_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("Reviews", ["Write or update review", "View book reviews", "View review details", "Back"])
+            choice = self._show_menu("Reviews ⭐", ["Write or update review", "View book reviews", "View review details", "Back"])
 
             if choice == "1":
                 self.add_review()
@@ -1140,7 +1140,7 @@ class LibBuddyCLI:
     # Delete it and the user menu gets longer again for no good reason.
     def my_books_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("My Books", ["Current borrows", "Borrow history", "Back"])
+            choice = self._show_menu("My Books 📚", ["Current borrows", "Borrow history", "Back"])
 
             if choice == "1":
                 self.my_current_borrows()
@@ -1157,7 +1157,7 @@ class LibBuddyCLI:
         while self.current_user is not None:
             choice = self._show_menu(
                 "Catalog",
-                ["Browse books", "View book details", "Add book", "Import from Open Library", "Update copies", "Remove book", "Back"],
+                ["Browse books 📚", "View book details 🔎", "Add book ➕", "Import from Open Library 🌐", "Update copies ✏️", "Remove book 🗑️", "Back"],
             )
 
             if choice == "1":
@@ -1181,7 +1181,7 @@ class LibBuddyCLI:
     # Delete it and the main admin menu starts bloating again.
     def users_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("Users", ["List users", "Create admin", "Back"])
+            choice = self._show_menu("Users 👥", ["List users", "Create admin", "Back"])
 
             if choice == "1":
                 self.list_users()
@@ -1232,7 +1232,7 @@ class LibBuddyCLI:
         while self.current_user is not None:
             choice = self._show_menu(
                 "Member Menu",
-                ["Available books", "Browse books", "Search books", "Borrow", "Return", "My books", "Reviews", "Logout"],
+                ["Available books ✅", "Browse books 📚", "Search books 🔎", "Borrow ➡️", "Return ↩️", "My books", "Reviews ⭐", "Logout 👋"],
             )
 
             try:
@@ -1266,7 +1266,7 @@ class LibBuddyCLI:
     # Delete it and admin users are basically just regular users with a fancy title.
     def admin_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("Admin Menu", ["Catalog", "Users", "Borrow records", "Reviews", "Logout"])
+            choice = self._show_menu("Admin Menu", ["Catalog 📚", "Users 👥", "Borrow records 🧾", "Reviews ⭐", "Logout 👋"])
 
             try:
                 if choice == "1":
@@ -1290,7 +1290,7 @@ class LibBuddyCLI:
     def run(self) -> None:
         while True:
             self._show_welcome_panel()
-            choice = self._show_menu("Welcome to LibBuddy", ["Register", "Login", "Exit"])
+            choice = self._show_menu("Welcome to LibBuddy", ["Register ✍️", "Login 🔐", "Exit 🚪"])
 
             try:
                 if choice == "1":
@@ -1311,7 +1311,7 @@ class LibBuddyCLI:
                     else:
                         self.user_menu()
                 elif choice == "3":
-                    print("Goodbye.")
+                    print("Goodbye. 👋")
                     break
                 else:
                     print("Invalid option. Try again.")

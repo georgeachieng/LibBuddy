@@ -536,6 +536,44 @@ class LibBuddyCLI:
         books = self._call(self.library_service, ["list_books", "get_books", "all_books"])
         self._print_books(list(books))
 
+    # This gives one book a proper detail screen instead of making users decode a table row.
+    # Delete it and "view details" goes back to not existing, which is exactly the problem.
+    def view_book_details(self) -> None:
+        book_id = self._prompt_int("Book ID to inspect: ", min_value=1)
+
+        try:
+            book = self._call(self.library_service, ["get_book", "get_book_status"], book_id)
+        except TypeError:
+            book = self._call(self.library_service, ["get_book", "get_book_status"], book_id=book_id)
+
+        if not book:
+            print("No book found with that ID.")
+            return
+
+        book_dict = self._to_dict(book)
+        try:
+            average = self._call(self.review_service, ["get_book_average_rating", "average_rating"], book_id)
+        except (ServiceNotReadyError, TypeError):
+            average = None
+
+        try:
+            reviews = self._call(self.review_service, ["get_book_reviews", "book_reviews"], book_id)
+        except TypeError:
+            reviews = self._call(self.review_service, ["get_book_reviews", "book_reviews"], book_id=book_id)
+
+        reviews = list(reviews)
+        print("\n=== Book Details ===")
+        print(f"ID: {self._get_field(book_dict, 'id', 'book_id')}")
+        print(f"Title: {self._get_field(book_dict, 'title')}")
+        print(f"Author: {self._get_field(book_dict, 'author')}")
+        print(f"ISBN: {self._get_field(book_dict, 'isbn')}")
+        print(
+            f"Stock: {self._get_field(book_dict, 'available_copies')}/"
+            f"{self._get_field(book_dict, 'total_copies', default=self._get_field(book_dict, 'available_copies'))}"
+        )
+        print(f"Reviews: {len(reviews)}")
+        print(f"Average rating: {average:.1f}/5" if average else "Average rating: No ratings yet")
+
     # Search asks for text, calls the service, then reuses the common printer.
     # Remove it and discoverability in the CLI drops hard.
     def search_books(self) -> None:
@@ -772,9 +810,18 @@ class LibBuddyCLI:
     @role_required("admin")
     def import_books_from_api(self) -> None:
         print("\n=== Import Books From Open Library ===")
+        # A tiny hint matters because this is search-first, not browse-first.
+        # Delete it and users are stuck guessing what kind of query works.
+        print("Try title, author, topic, or ISBN.")
+        print("Examples: clean code | robert martin | python | 9780132350884")
         query = self._get_input("Search query: ")
         if not query:
             print("Enter something to search for.")
+            return
+        # Short queries are mostly useless and tend to trigger ugly API responses.
+        # Delete this and the user gets another avoidable error instead of guidance.
+        if len(query) < 2:
+            print("Use at least 2 characters. Try title, author, topic, or ISBN.")
             return
 
         limit_raw = self._get_input("How many results? [default: 5]: ")
@@ -940,6 +987,30 @@ class LibBuddyCLI:
         else:
             print("Could not save the review.")
 
+    # This shows one review properly instead of forcing users to parse a condensed list line.
+    # Delete it and review detail still means "squint at the summary."
+    def view_review_details(self) -> None:
+        review_id = self._prompt_int("Review ID to inspect: ", min_value=1)
+
+        try:
+            review = self._call(self.review_service, ["get_review"], review_id)
+        except TypeError:
+            review = self._call(self.review_service, ["get_review"], review_id=review_id)
+
+        if not review:
+            print("No review found with that ID.")
+            return
+
+        review_dict = self._to_dict(review)
+        print("\n=== Review Details ===")
+        print(f"Review ID: {self._get_field(review_dict, 'id')}")
+        print(f"Book: {self._get_book_label(self._get_field(review_dict, 'book_id'))}")
+        print(f"User: {self._get_user_label(self._get_field(review_dict, 'user_id'))}")
+        print(f"Rating: {self._get_field(review_dict, 'rating')}/5")
+        print(f"Created: {self._format_timestamp(self._get_field(review_dict, 'created_at', default='-'))}")
+        comment = self._get_field(review_dict, "comment", default="")
+        print(f"Comment: {comment if comment and comment != '-' else 'No comment'}")
+
     # This view prints all reviews for one book plus the average when possible.
     # Delete it and ratings exist in storage but users cannot really see them.
     def view_book_reviews(self) -> None:
@@ -989,7 +1060,7 @@ class LibBuddyCLI:
             # Delete this and output gets more sterile and harder to scan.
             stars = "*" * self._get_field(r, "rating", default=0)
             print(
-                f"  {self._get_user_label(self._get_field(r, 'user_id'))} | "
+                f"  #{self._get_field(r, 'id')} | {self._get_user_label(self._get_field(r, 'user_id'))} | "
                 f"{stars} ({self._get_field(r, 'rating')}/5) | "
                 f"{self._format_timestamp(self._get_field(r, 'created_at', default='-'))}"
             )
@@ -1036,13 +1107,15 @@ class LibBuddyCLI:
     # Delete it and the user menu goes back to being a long grocery list.
     def reviews_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("Reviews", ["Write or update review", "View book reviews", "Back"])
+            choice = self._show_menu("Reviews", ["Write or update review", "View book reviews", "View review details", "Back"])
 
             if choice == "1":
                 self.add_review()
             elif choice == "2":
                 self.view_book_reviews()
             elif choice == "3":
+                self.view_review_details()
+            elif choice == "4":
                 return
             else:
                 print("Invalid option. Try again.")
@@ -1068,20 +1141,22 @@ class LibBuddyCLI:
         while self.current_user is not None:
             choice = self._show_menu(
                 "Catalog",
-                ["Browse books", "Add book", "Import from Open Library", "Update copies", "Remove book", "Back"],
+                ["Browse books", "View book details", "Add book", "Import from Open Library", "Update copies", "Remove book", "Back"],
             )
 
             if choice == "1":
                 self.list_books()
             elif choice == "2":
-                self.add_book()
+                self.view_book_details()
             elif choice == "3":
-                self.import_books_from_api()
+                self.add_book()
             elif choice == "4":
-                self.update_book_copies()
+                self.import_books_from_api()
             elif choice == "5":
-                self.delete_book()
+                self.update_book_copies()
             elif choice == "6":
+                self.delete_book()
+            elif choice == "7":
                 return
             else:
                 print("Invalid option. Try again.")
@@ -1125,6 +1200,7 @@ class LibBuddyCLI:
             r = self._to_dict(review)
             rows.append(
                 [
+                    self._get_field(r, "id"),
                     self._get_book_label(self._get_field(r, "book_id")),
                     self._get_user_label(self._get_field(r, "user_id")),
                     f"{self._get_field(r, 'rating')}/5",
@@ -1132,7 +1208,7 @@ class LibBuddyCLI:
                     shorten(str(self._get_field(r, "comment", default="")), width=36, placeholder="..."),
                 ]
             )
-        self._print_table(["Book", "User", "Rating", "Created", "Comment"], rows)
+        self._print_table(["ID", "Book", "User", "Rating", "Created", "Comment"], rows)
 
     # User menu keeps looping until logout.
     # Delete this and regular users have nowhere to actually use the app.

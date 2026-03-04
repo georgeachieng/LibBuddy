@@ -293,6 +293,10 @@ class LibraryService:
         query = (query or "").strip()
         if not query:
             raise ValueError("Search query cannot be empty.")
+        # One-letter queries are basically noise and the API may reject them anyway.
+        # Delete this and users get avoidable 422 errors for junk searches.
+        if len(query) < 2:
+            raise ValueError("Use at least 2 characters for API search.")
 
         if limit < 1:
             raise ValueError("Limit must be at least 1.")

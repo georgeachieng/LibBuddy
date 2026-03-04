@@ -153,11 +153,13 @@ class LibBuddyCLI:
     # Prompts should respect the same margin as the rest of the CLI.
     # Delete this and input lines still start flush-left even after the UI padding pass.
     def _get_input(self, prompt: str) -> str:
-        return input(prompt).strip()
+        return builtins.input(f"{self.INDENT}{prompt}").strip()
 
     # This masks passwords with stars in a real terminal so people are not typing secrets in public.
     # Delete it and password entry stays fully visible, which is sloppy for demos and real use.
     def _get_password_input(self, prompt: str) -> str:
+        global _PRINT_AT_LINE_START
+
         # Tests and non-interactive runs do not have a proper TTY, so fall back cleanly there.
         # Delete this and the suite starts hanging or failing on terminal-only logic.
         if not sys.stdin.isatty() or not sys.stdout.isatty():
@@ -166,12 +168,14 @@ class LibBuddyCLI:
         if sys.platform == "win32":
             import msvcrt
 
-            print(prompt, end="", flush=True)
+            builtins.print(f"{self.INDENT}{prompt}", end="", flush=True)
+            _PRINT_AT_LINE_START = False
             chars: list[str] = []
             while True:
                 key = msvcrt.getwch()
                 if key in ("\r", "\n"):
-                    print()
+                    builtins.print()
+                    _PRINT_AT_LINE_START = True
                     return "".join(chars).strip()
                 if key == "\003":
                     raise KeyboardInterrupt
@@ -191,7 +195,8 @@ class LibBuddyCLI:
         import termios
         import tty
 
-        print(prompt, end="", flush=True)
+        builtins.print(f"{self.INDENT}{prompt}", end="", flush=True)
+        _PRINT_AT_LINE_START = False
         chars: list[str] = []
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
@@ -200,7 +205,8 @@ class LibBuddyCLI:
             while True:
                 key = sys.stdin.read(1)
                 if key in ("\r", "\n"):
-                    print()
+                    builtins.print()
+                    _PRINT_AT_LINE_START = True
                     return "".join(chars).strip()
                 if key == "\x03":
                     raise KeyboardInterrupt
@@ -560,7 +566,9 @@ class LibBuddyCLI:
         # This is the actual session handoff.
         # Delete it and every post-login feature thinks nobody is logged in.
         self.current_user = user
-        print(f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}. 👋")
+        print(
+            f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}. 👋".center(72)
+        )
 
     # Logout clears both the service session and the CLI session.
     # Delete it and users can get stuck "logged in" until restart.

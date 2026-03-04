@@ -150,6 +150,18 @@ class CLITests(unittest.TestCase):
         library.fetch_books_from_open_library.assert_called_once_with("clean", 2)
         library.import_books.assert_called_once()
 
+    def test_import_books_from_api_rejects_too_short_query_before_service_call(self):
+        cli, _, library, _ = self.make_cli()
+        cli.current_user = {"id": 1, "role": "admin"}
+
+        output = self.capture_output(
+            cli.import_books_from_api,
+            inputs=["a"],
+        )
+
+        self.assertIn("Use at least 2 characters.", output)
+        library.fetch_books_from_open_library.assert_not_called()
+
     def test_my_current_borrows_prints_active_record_count(self):
         cli, _, library, _ = self.make_cli()
         cli.current_user = {"id": 4, "role": "user"}
@@ -177,6 +189,52 @@ class CLITests(unittest.TestCase):
         self.assertIn("Your reviewable books:", output)
         self.assertIn("Choose a book from your borrowing history.", output)
         review.add_review.assert_not_called()
+
+    def test_view_book_details_prints_inventory_and_rating_summary(self):
+        cli, _, library, review = self.make_cli()
+        library.get_book.return_value = {
+            "id": 3,
+            "title": "Design Patterns",
+            "author": "GoF",
+            "isbn": "9780201633610",
+            "available_copies": 2,
+            "total_copies": 4,
+        }
+        review.get_book_average_rating.return_value = 4.5
+        review.get_book_reviews.return_value = [{"id": 9}, {"id": 10}]
+
+        output = self.capture_output(
+            cli.view_book_details,
+            inputs=["3"],
+        )
+
+        self.assertIn("=== Book Details ===", output)
+        self.assertIn("Design Patterns", output)
+        self.assertIn("Stock: 2/4", output)
+        self.assertIn("Average rating: 4.5/5", output)
+
+    def test_view_review_details_prints_full_review(self):
+        cli, auth, _, review = self.make_cli()
+        review.get_review.return_value = {
+            "id": 11,
+            "book_id": 3,
+            "user_id": 5,
+            "rating": 4,
+            "comment": "Very solid read",
+            "created_at": "2026-03-03T11:00:00",
+        }
+        auth.get_user_by_id.return_value = {"id": 5, "username": "joyburgei"}
+        cli.library_service.get_book.return_value = {"id": 3, "title": "Design Patterns"}
+
+        output = self.capture_output(
+            cli.view_review_details,
+            inputs=["11"],
+        )
+
+        self.assertIn("=== Review Details ===", output)
+        self.assertIn("Review ID: 11", output)
+        self.assertIn("Rating: 4/5", output)
+        self.assertIn("Very solid read", output)
 
 
 if __name__ == "__main__":

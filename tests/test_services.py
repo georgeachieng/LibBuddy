@@ -142,6 +142,12 @@ class LibraryServiceTests(ServiceTestCase):
         self.assertEqual(results[0]["author"], "Robert C. Martin")
         self.assertEqual(results[0]["isbn"], "9780134494166")
 
+    def test_fetch_books_from_open_library_rejects_one_character_query(self):
+        service = LibraryService()
+
+        with self.assertRaises(ValueError):
+            service.fetch_books_from_open_library("a", limit=3)
+
     def test_import_books_skips_duplicates_and_saves_new_books(self):
         service = LibraryService()
         service.add_book("Clean Code", "Robert C. Martin", "9780132350884", 2)

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import builtins
+
 # sys gives us the terminal handles for masked password input.
 # Delete it and the CLI cannot tell whether it's running in a real terminal.
 import sys
@@ -23,6 +25,31 @@ except ImportError:  # pragma: no cover
     tabulate = None
 
 
+# This keeps every CLI line indented without manually babysitting each print call.
+# Delete it and random screens snap back to the terminal wall again.
+PRINT_INDENT = "    "
+_PRINT_AT_LINE_START = True
+
+
+# Wrapping print here means old direct prints still follow the same margin rules.
+# Delete it and the interface spacing drifts every time someone forgets the helper.
+def print(*args: Any, sep: str = " ", end: str = "\n", file=None, flush: bool = False) -> None:
+    global _PRINT_AT_LINE_START
+
+    if file is not None:
+        builtins.print(*args, sep=sep, end=end, file=file, flush=flush)
+        return
+
+    text = sep.join(str(arg) for arg in args)
+    if text:
+        if _PRINT_AT_LINE_START:
+            text = f"{PRINT_INDENT}{text}"
+        text = text.replace("\n", f"\n{PRINT_INDENT}")
+
+    builtins.print(text, end=end, flush=flush)
+    _PRINT_AT_LINE_START = end.endswith("\n")
+
+
 # This custom error keeps setup issues separate from actual user mistakes.
 # Delete it and missing service code gets mixed in with random runtime junk.
 class ServiceNotReadyError(RuntimeError):
@@ -32,6 +59,8 @@ class ServiceNotReadyError(RuntimeError):
 # This class is the CLI traffic cop.
 # Remove it and there is no menu flow, no auth handoff, basically no app.
 class LibBuddyCLI:
+    INDENT = "    "
+
     def __init__(self) -> None:
         # These lazy loads let the CLI survive teammates naming things slightly differently.
         # Delete any one and that feature path dies the second the app boots.
@@ -116,8 +145,14 @@ class LibBuddyCLI:
 
     # Centralizing input trimming keeps every prompt from carrying whitespace garbage.
     # Delete it and validation gets way messier across the whole CLI.
-    @staticmethod
-    def _get_input(prompt: str) -> str:
+    # One shared printer keeps the left margin consistent instead of hand-spacing random screens.
+    # Delete it and terminal output goes back to hugging the edge.
+    def _line(self, text: str = "") -> None:
+        print(text)
+
+    # Prompts should respect the same margin as the rest of the CLI.
+    # Delete this and input lines still start flush-left even after the UI padding pass.
+    def _get_input(self, prompt: str) -> str:
         return input(prompt).strip()
 
     # This masks passwords with stars in a real terminal so people are not typing secrets in public.
@@ -181,11 +216,15 @@ class LibBuddyCLI:
 
     # This loop keeps numeric prompts from exploding on bad input.
     # Delete it and one typo turns into a crash or bad data sneaking through.
-    def _prompt_int(self, prompt: str, min_value: int | None = None) -> int:
+    def _prompt_int(self, prompt: str, min_value: int | None = None, allow_cancel: bool = False) -> int | None:
         while True:
             # Reuse the trimmed input helper so numbers do not come with junk spaces attached.
             # Skip this and the validation path becomes inconsistent.
             raw = self._get_input(prompt)
+            # This gives users an escape hatch instead of trapping them in the number loop.
+            # Delete it and "back" still does nothing useful mid-action.
+            if allow_cancel and raw.lower() in {"b", "back", "cancel"}:
+                return None
             try:
                 # The int cast is the real gatekeeper here.
                 # Remove it and IDs stay as strings, which breaks service lookups later.
@@ -260,7 +299,10 @@ class LibBuddyCLI:
 
     # User labels make review and admin screens feel like people are using them, not just IDs.
     # Delete it and the CLI keeps outputting anonymous number soup.
-    def _get_user_label(self, user_id: Any) -> str:
+    def _get_user_label(self, user_id: Any, fallback_name: Any = None) -> str:
+        if fallback_name not in (None, ""):
+            return str(fallback_name)
+
         try:
             user = self._call(self.auth_service, ["get_user_by_id"], int(user_id))
         except (ServiceNotReadyError, TypeError, ValueError):
@@ -305,24 +347,27 @@ class LibBuddyCLI:
     # One tiny helper keeps menus compact without making them cryptic.
     # Delete it and the CLI goes back to repeating the same print boilerplate everywhere.
     def _show_menu(self, title: str, options: list[str]) -> str:
-        print("\n" + "=" * 72)
-        print(title.center(72))
-        print("=" * 72)
+        self._line()
+        self._line("=" * 72)
+        self._line(title.center(72))
+        self._line("=" * 72)
+        print()
         for index, option in enumerate(options, start=1):
-            print(f"{index}. {option}")
+            self._line(f"{index}. {option}")
+        print()
         return self._get_input("Select an option: ")
 
     # This keeps table output readable without dragging in a package just for tests and fallback mode.
     # Delete it and every list screen goes back to uneven, scroll-heavy print spam.
-    @staticmethod
-    def _print_table(headers: list[str], rows: list[list[Any]]) -> None:
+    def _print_table(self, headers: list[str], rows: list[list[Any]]) -> None:
         if not rows:
             return
 
         # Use the nicer renderer when it's installed. Easy win, zero logic drama.
         # Delete this and the interface stays more basic than it needs to be.
         if tabulate is not None:
-            print(tabulate(rows, headers=headers, tablefmt="fancy_grid"))
+            for line in tabulate(rows, headers=headers, tablefmt="fancy_grid").splitlines():
+                self._line(line)
             return
 
         normalized = [[str(cell) for cell in row] for row in rows]
@@ -336,10 +381,10 @@ class LibBuddyCLI:
         def render(row: list[str]) -> str:
             return " | ".join(cell.ljust(widths[index]) for index, cell in enumerate(row))
 
-        print(render(headers))
-        print("-+-".join("-" * width for width in widths))
+        self._line(render(headers))
+        self._line("-+-".join("-" * width for width in widths))
         for row in normalized:
-            print(render(row))
+            self._line(render(row))
 
     # A small stats panel makes the landing screen feel like an actual app, not a blank prompt farm.
     # Delete it and the first impression gets a lot flatter again.
@@ -359,12 +404,13 @@ class LibBuddyCLI:
         except ServiceNotReadyError:
             review_count = 0
 
-        print("\n" + "=" * 72)
-        print("LIBBUDDY 📚".center(72))
-        print("CLI Library Desk".center(72))
-        print("=" * 72)
-        print(f"Catalog: {book_count} books | Members: {user_count} users | Reviews: {review_count} ⭐")
-        print("-" * 72)
+        self._line()
+        self._line("=" * 72)
+        self._line("LIBBUDDY 📚".center(72))
+        self._line("CLI Library Desk".center(72))
+        self._line("=" * 72)
+        self._line(f"Catalog: {book_count} books | Members: {user_count} users | Reviews: {review_count} ⭐")
+        self._line("-" * 72)
 
     # This handles all book list output in one place.
     # Delete it and every book-printing path grows its own messy formatting logic.
@@ -408,7 +454,10 @@ class LibBuddyCLI:
             rows.append(
                 [
                     self._get_field(r, "id", "record_id"),
-                    self._get_user_label(self._get_field(r, "user_id")),
+                    self._get_user_label(
+                        self._get_field(r, "user_id"),
+                        self._get_field(r, "borrower_name", default=None),
+                    ),
                     self._get_book_label(self._get_field(r, "book_id")),
                     self._get_field(r, "status"),
                     self._format_timestamp(self._get_field(r, "borrowed_at")),
@@ -620,7 +669,10 @@ class LibBuddyCLI:
     @login_required
     def borrow_book(self) -> None:
         user_id = self._get_current_user_id()
-        book_id = self._prompt_int("Book ID to borrow: ", min_value=1)
+        book_id = self._prompt_int("Book ID to borrow (or 'back'): ", min_value=1, allow_cancel=True)
+        if book_id is None:
+            print("Borrow cancelled.")
+            return
 
         try:
             ok = self._call(
@@ -649,7 +701,10 @@ class LibBuddyCLI:
     @login_required
     def return_book(self) -> None:
         user_id = self._get_current_user_id()
-        book_id = self._prompt_int("Book ID to return: ", min_value=1)
+        book_id = self._prompt_int("Book ID to return (or 'back'): ", min_value=1, allow_cancel=True)
+        if book_id is None:
+            print("Return cancelled.")
+            return
 
         try:
             ok = self._call(
@@ -1021,7 +1076,9 @@ class LibBuddyCLI:
         print("\n=== Review Details ===")
         print(f"Review ID: {self._get_field(review_dict, 'id')}")
         print(f"Book: {self._get_book_label(self._get_field(review_dict, 'book_id'))}")
-        print(f"User: {self._get_user_label(self._get_field(review_dict, 'user_id'))}")
+        print(
+            f"User: {self._get_user_label(self._get_field(review_dict, 'user_id'), self._get_field(review_dict, 'reviewer_name', default=None))}"
+        )
         print(f"Rating: {self._get_field(review_dict, 'rating')}/5")
         print(f"Created: {self._format_timestamp(self._get_field(review_dict, 'created_at', default='-'))}")
         comment = self._get_field(review_dict, "comment", default="")
@@ -1076,7 +1133,7 @@ class LibBuddyCLI:
             # Delete this and output gets more sterile and harder to scan.
             stars = "*" * self._get_field(r, "rating", default=0)
             print(
-                f"  #{self._get_field(r, 'id')} | {self._get_user_label(self._get_field(r, 'user_id'))} | "
+                f"  #{self._get_field(r, 'id')} | {self._get_user_label(self._get_field(r, 'user_id'), self._get_field(r, 'reviewer_name', default=None))} | "
                 f"{stars} ({self._get_field(r, 'rating')}/5) | "
                 f"{self._format_timestamp(self._get_field(r, 'created_at', default='-'))}"
             )
@@ -1218,7 +1275,10 @@ class LibBuddyCLI:
                 [
                     self._get_field(r, "id"),
                     self._get_book_label(self._get_field(r, "book_id")),
-                    self._get_user_label(self._get_field(r, "user_id")),
+                    self._get_user_label(
+                        self._get_field(r, "user_id"),
+                        self._get_field(r, "reviewer_name", default=None),
+                    ),
                     f"{self._get_field(r, 'rating')}/5",
                     self._format_timestamp(self._get_field(r, "created_at", default="-")),
                     shorten(str(self._get_field(r, "comment", default="")), width=36, placeholder="..."),

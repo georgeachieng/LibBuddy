@@ -68,5 +68,25 @@
         "salt": "6f37ad1cd6ef010abb56c3ea9f8da922",
         "password_hash": "1a647b50040549375cb4d885440238a5471f3cab1a8262024406fa96dbc8db93",
         "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 8,
+        "name": "Eugene Ogutu",
+        "username": "eugeneogutu",
+        "email": "eugene.ogutu1@student.moringaschool.com",
+        "role": "user",
+        "salt": "5d4e150f73c6b3c977d07b1d4cba85ba",
+        "password_hash": "9d0c8eb0cf73caa65927312bfa72f6efaf131d4352dba3e9e0fb501d04de9ea6",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 9,
+        "name": "Trina Kahu",
+        "username": "trinakahu",
+        "email": "trina.luseno@student.moringaschool.com",
+        "role": "user",
+        "salt": "c007a50373a593eaa3d7e85d0822e77b",
+        "password_hash": "62441f695cd95fc004e4fe10fc37383739728c165b35e41fd371a3c00cd95a92",
+        "created_at": "2026-03-03T16:00:00"
     }
 ]

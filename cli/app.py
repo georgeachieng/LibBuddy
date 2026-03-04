@@ -536,6 +536,22 @@ class LibBuddyCLI:
         books = self._call(self.library_service, ["list_books", "get_books", "all_books"])
         self._print_books(list(books))
 
+    # Members need a quick "what can I actually borrow right now?" view.
+    # Delete it and they keep sifting through out-of-stock titles for no reason.
+    def list_available_books(self) -> None:
+        books = self._call(self.library_service, ["list_books", "get_books", "all_books"])
+        available_books = [
+            book for book in list(books)
+            if self._get_field(self._to_dict(book), "available_copies", default=0) > 0
+        ]
+
+        if not available_books:
+            print("No books are available right now.")
+            return
+
+        print("\nAvailable Books:")
+        self._print_books(available_books)
+
     # This gives one book a proper detail screen instead of making users decode a table row.
     # Delete it and "view details" goes back to not existing, which is exactly the problem.
     def view_book_details(self) -> None:
@@ -1214,24 +1230,29 @@ class LibBuddyCLI:
     # Delete this and regular users have nowhere to actually use the app.
     def user_menu(self) -> None:
         while self.current_user is not None:
-            choice = self._show_menu("Member Menu", ["Browse books", "Search books", "Borrow", "Return", "My books", "Reviews", "Logout"])
+            choice = self._show_menu(
+                "Member Menu",
+                ["Available books", "Browse books", "Search books", "Borrow", "Return", "My books", "Reviews", "Logout"],
+            )
 
             try:
                 # This ladder is boring on purpose: explicit beats clever in CLI menus.
                 # Delete any branch and that menu option becomes a liar.
                 if choice == "1":
-                    self.list_books()
+                    self.list_available_books()
                 elif choice == "2":
-                    self.search_books()
+                    self.list_books()
                 elif choice == "3":
-                    self.borrow_book()
+                    self.search_books()
                 elif choice == "4":
-                    self.return_book()
+                    self.borrow_book()
                 elif choice == "5":
-                    self.my_books_menu()
+                    self.return_book()
                 elif choice == "6":
-                    self.reviews_menu()
+                    self.my_books_menu()
                 elif choice == "7":
+                    self.reviews_menu()
+                elif choice == "8":
                     self.logout()
                     return
                 else:

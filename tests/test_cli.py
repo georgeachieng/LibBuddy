@@ -95,6 +95,35 @@ class CLITests(unittest.TestCase):
         self.assertIn("Robert C. Martin", output)
         self.assertIn("2/2", output)
 
+    def test_list_available_books_filters_out_unavailable_titles(self):
+        cli, _, library, _ = self.make_cli()
+        library.list_books.return_value = [
+            {
+                "id": 1,
+                "title": "Clean Code",
+                "author": "Robert C. Martin",
+                "isbn": "9780132350884",
+                "available_copies": 2,
+                "total_copies": 2,
+            },
+            {
+                "id": 2,
+                "title": "Gone Book",
+                "author": "Some Author",
+                "isbn": "1111111111",
+                "available_copies": 0,
+                "total_copies": 2,
+            },
+        ]
+
+        output = self.capture_output(cli.list_available_books)
+
+        # This proves the new member view only shows borrowable books, not the dead stock too.
+        # Delete it and the menu upgrade can regress into another full catalog dump.
+        self.assertIn("Available Books:", output)
+        self.assertIn("Clean Code", output)
+        self.assertNotIn("Gone Book", output)
+
     def test_add_review_rejects_rating_above_five_before_calling_service(self):
         cli, _, library, review = self.make_cli()
         cli.current_user = {"id": 4, "role": "user"}

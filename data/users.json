@@ -11,6 +11,16 @@
     },
     {
         "id": 2,
+        "name": "Ashanti Kweyu",
+        "username": "ashantikweyu",
+        "email": "ashanti.admin@libbuddy.com",
+        "role": "admin",
+        "salt": "2dd0246a1bf48bae60af6d46b4fb5a2d",
+        "password_hash": "b809ff9cf5b6bfb5976c41b277ded282274a49534d2f4e8bfd49758527e6a211",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 3,
         "name": "George Achieng",
         "username": "georgeachieng",
         "email": "george.admin@libbuddy.com",
@@ -20,8 +30,8 @@
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 3,
-        "name": "Elvis Rob Yampoy",
+        "id": 4,
+        "name": "Elvis Yampoy",
         "username": "elvisyampoy",
         "email": "elvis.admin@libbuddy.com",
         "role": "admin",
@@ -30,7 +40,7 @@
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 4,
+        "id": 5,
         "name": "George Okumu",
         "username": "georgeokumu",
         "email": "george.okumu.admin@libbuddy.com",
@@ -40,7 +50,7 @@
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 5,
+        "id": 6,
         "name": "Caleb Munyoki",
         "username": "calebmunyoki",
         "email": "caleb@libbuddy.com",
@@ -50,7 +60,7 @@
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 6,
+        "id": 7,
         "name": "Abigael Ongwae",
         "username": "abigaelongwae",
         "email": "abigael@libbuddy.com",
@@ -60,13 +70,23 @@
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 7,
-        "name": "Ashanti Kweyu",
-        "username": "ashantikweyu",
-        "email": "ashanti.admin@libbuddy.com",
-        "role": "admin",
-        "salt": "2dd0246a1bf48bae60af6d46b4fb5a2d",
-        "password_hash": "b809ff9cf5b6bfb5976c41b277ded282274a49534d2f4e8bfd49758527e6a211",
+        "id": 8,
+        "name": "Eugene Ogutu",
+        "username": "eugeneogutu",
+        "email": "eugene.ogutu1@student.moringaschool.com",
+        "role": "user",
+        "salt": "5d4e150f73c6b3c977d07b1d4cba85ba",
+        "password_hash": "9d0c8eb0cf73caa65927312bfa72f6efaf131d4352dba3e9e0fb501d04de9ea6",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 9,
+        "name": "Trina Kahu",
+        "username": "trinakahu",
+        "email": "trina.luseno@student.moringaschool.com",
+        "role": "user",
+        "salt": "c007a50373a593eaa3d7e85d0822e77b",
+        "password_hash": "62441f695cd95fc004e4fe10fc37383739728c165b35e41fd371a3c00cd95a92",
         "created_at": "2026-03-03T16:00:00"
     }
 ]

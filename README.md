@@ -44,7 +44,7 @@ python3 -m unittest discover -s tests -v
 ## Demo Data
 
 This branch ships with:
-- 7 sample users
+- 9 sample users
 - 20 books
 - 14 borrow records
 - 10 reviews

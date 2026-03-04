@@ -94,21 +94,25 @@ class LibBuddyCLI:
         print(text)
 
     def _get_input(self, prompt: str) -> str:
-        return input(prompt).strip()
+        return builtins.input(f"{self.INDENT}{prompt}").strip()
 
     def _get_password_input(self, prompt: str) -> str:
+        global _PRINT_AT_LINE_START
+
         if not sys.stdin.isatty() or not sys.stdout.isatty():
             return self._get_input(prompt)
 
         if sys.platform == "win32":
             import msvcrt
 
-            print(prompt, end="", flush=True)
+            builtins.print(f"{self.INDENT}{prompt}", end="", flush=True)
+            _PRINT_AT_LINE_START = False
             chars: list[str] = []
             while True:
                 key = msvcrt.getwch()
                 if key in ("\r", "\n"):
-                    print()
+                    builtins.print()
+                    _PRINT_AT_LINE_START = True
                     return "".join(chars).strip()
                 if key == "\003":
                     raise KeyboardInterrupt
@@ -126,7 +130,8 @@ class LibBuddyCLI:
         import termios
         import tty
 
-        print(prompt, end="", flush=True)
+        builtins.print(f"{self.INDENT}{prompt}", end="", flush=True)
+        _PRINT_AT_LINE_START = False
         chars: list[str] = []
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
@@ -135,7 +140,8 @@ class LibBuddyCLI:
             while True:
                 key = sys.stdin.read(1)
                 if key in ("\r", "\n"):
-                    print()
+                    builtins.print()
+                    _PRINT_AT_LINE_START = True
                     return "".join(chars).strip()
                 if key == "\x03":
                     raise KeyboardInterrupt
@@ -419,7 +425,9 @@ class LibBuddyCLI:
             return
 
         self.current_user = user
-        print(f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}. 👋")
+        print(
+            f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}. 👋".center(72)
+        )
 
     def logout(self) -> None:
         try:

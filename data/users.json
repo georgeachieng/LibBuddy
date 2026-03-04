@@ -11,6 +11,16 @@
     },
     {
         "id": 2,
+        "name": "Ashanti Kweyu",
+        "username": "ashantikweyu",
+        "email": "ashanti.admin@libbuddy.com",
+        "role": "admin",
+        "salt": "2dd0246a1bf48bae60af6d46b4fb5a2d",
+        "password_hash": "b809ff9cf5b6bfb5976c41b277ded282274a49534d2f4e8bfd49758527e6a211",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 3,
         "name": "George Achieng",
         "username": "georgeachieng",
         "email": "george.admin@libbuddy.com",
@@ -20,8 +30,8 @@
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 3,
-        "name": "Elvis Rob Yampoy",
+        "id": 4,
+        "name": "Elvis Yampoy",
         "username": "elvisyampoy",
         "email": "elvis.admin@libbuddy.com",
         "role": "admin",
@@ -30,7 +40,7 @@
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 4,
+        "id": 5,
         "name": "George Okumu",
         "username": "georgeokumu",
         "email": "george.okumu.admin@libbuddy.com",
@@ -40,7 +50,7 @@
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 5,
+        "id": 6,
         "name": "Caleb Munyoki",
         "username": "calebmunyoki",
         "email": "caleb@libbuddy.com",
@@ -50,23 +60,13 @@
         "created_at": "2026-03-03T16:00:00"
     },
     {
-        "id": 6,
+        "id": 7,
         "name": "Abigael Ongwae",
         "username": "abigaelongwae",
         "email": "abigael@libbuddy.com",
         "role": "user",
         "salt": "6f37ad1cd6ef010abb56c3ea9f8da922",
         "password_hash": "1a647b50040549375cb4d885440238a5471f3cab1a8262024406fa96dbc8db93",
-        "created_at": "2026-03-03T16:00:00"
-    },
-    {
-        "id": 7,
-        "name": "Ashanti Kweyu",
-        "username": "ashantikweyu",
-        "email": "ashanti.admin@libbuddy.com",
-        "role": "admin",
-        "salt": "2dd0246a1bf48bae60af6d46b4fb5a2d",
-        "password_hash": "b809ff9cf5b6bfb5976c41b277ded282274a49534d2f4e8bfd49758527e6a211",
         "created_at": "2026-03-03T16:00:00"
     }
 ]

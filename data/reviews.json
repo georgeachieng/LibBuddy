@@ -1,82 +1,802 @@
 [
     {
         "id": 1,
-        "user_id": 2,
+        "user_id": 5,
         "book_id": 1,
         "rating": 5,
-        "comment": "Clean Code is blunt in a good way. The naming and function-size chapters were the most useful for me.",
-        "created_at": "2026-02-27T10:15:00"
+        "comment": "Clean Code was easy to follow, and Robert C. Martin's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-09T12:00:00"
     },
     {
         "id": 2,
-        "user_id": 3,
-        "book_id": 2,
+        "user_id": 6,
+        "book_id": 1,
         "rating": 4,
-        "comment": "The Pragmatic Programmer feels older in spots, but the advice on habits and trade-offs still lands.",
-        "created_at": "2026-02-28T16:00:00"
+        "comment": "I liked how Clean Code balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-02-11T13:00:00"
     },
     {
         "id": 3,
-        "user_id": 5,
-        "book_id": 5,
-        "rating": 5,
-        "comment": "Python Crash Course was actually beginner-friendly. I got through the basics fast without feeling lost.",
-        "created_at": "2026-02-26T09:30:00"
+        "user_id": 7,
+        "book_id": 1,
+        "rating": 4,
+        "comment": "Clean Code had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-02-13T14:00:00"
     },
     {
         "id": 4,
-        "user_id": 2,
-        "book_id": 6,
-        "rating": 4,
-        "comment": "Automate the Boring Stuff is super practical. The file and spreadsheet examples were the parts I reused right away.",
-        "created_at": "2026-03-01T17:15:00"
+        "user_id": 8,
+        "book_id": 1,
+        "rating": 5,
+        "comment": "This one made sense fast. Robert C. Martin explains the core ideas in Clean Code without making them feel overcomplicated.",
+        "created_at": "2026-02-15T15:00:00"
     },
     {
         "id": 5,
-        "user_id": 4,
-        "book_id": 8,
-        "rating": 4,
-        "comment": "Grokking Algorithms explains the ideas without trying to sound smarter than the reader. Good intro book.",
-        "created_at": "2026-03-02T18:45:00"
+        "user_id": 9,
+        "book_id": 1,
+        "rating": 3,
+        "comment": "Clean Code was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-02-17T16:00:00"
     },
     {
         "id": 6,
         "user_id": 5,
-        "book_id": 9,
-        "rating": 3,
-        "comment": "Introduction to Algorithms is useful, but definitely not a casual read. More reference book than bedtime story.",
-        "created_at": "2026-03-03T08:20:00"
+        "book_id": 2,
+        "rating": 4,
+        "comment": "The Pragmatic Programmer was easy to follow, and David Thomas's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-11T12:00:00"
     },
     {
         "id": 7,
-        "user_id": 2,
-        "book_id": 10,
-        "rating": 5,
-        "comment": "Head First Design Patterns made the examples easier to remember. Way less dry than I expected.",
-        "created_at": "2026-03-01T11:40:00"
+        "user_id": 6,
+        "book_id": 2,
+        "rating": 4,
+        "comment": "I liked how The Pragmatic Programmer balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-02-13T13:00:00"
     },
     {
         "id": 8,
-        "user_id": 3,
-        "book_id": 11,
-        "rating": 4,
-        "comment": "Effective Python is nice when you already know the basics and want sharper habits. Short chapters, low nonsense.",
-        "created_at": "2026-03-02T08:25:00"
+        "user_id": 7,
+        "book_id": 2,
+        "rating": 5,
+        "comment": "The Pragmatic Programmer had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-02-15T14:00:00"
     },
     {
         "id": 9,
-        "user_id": 4,
-        "book_id": 12,
-        "rating": 5,
-        "comment": "Cracking the Coding Interview is still solid for practice. The walkthroughs made the harder questions less annoying.",
-        "created_at": "2026-03-02T16:15:00"
+        "user_id": 8,
+        "book_id": 2,
+        "rating": 3,
+        "comment": "This one made sense fast. David Thomas explains the core ideas in The Pragmatic Programmer without making them feel overcomplicated.",
+        "created_at": "2026-02-17T15:00:00"
     },
     {
         "id": 10,
+        "user_id": 9,
+        "book_id": 2,
+        "rating": 5,
+        "comment": "The Pragmatic Programmer was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-02-19T16:00:00"
+    },
+    {
+        "id": 11,
+        "user_id": 5,
+        "book_id": 3,
+        "rating": 4,
+        "comment": "Design Patterns was easy to follow, and Erich Gamma's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-13T12:00:00"
+    },
+    {
+        "id": 12,
+        "user_id": 6,
+        "book_id": 3,
+        "rating": 5,
+        "comment": "I liked how Design Patterns balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-02-15T13:00:00"
+    },
+    {
+        "id": 13,
+        "user_id": 7,
+        "book_id": 3,
+        "rating": 3,
+        "comment": "Design Patterns had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-02-17T14:00:00"
+    },
+    {
+        "id": 14,
+        "user_id": 8,
+        "book_id": 3,
+        "rating": 5,
+        "comment": "This one made sense fast. Erich Gamma explains the core ideas in Design Patterns without making them feel overcomplicated.",
+        "created_at": "2026-02-19T15:00:00"
+    },
+    {
+        "id": 15,
+        "user_id": 9,
+        "book_id": 3,
+        "rating": 4,
+        "comment": "Design Patterns was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-02-21T16:00:00"
+    },
+    {
+        "id": 16,
+        "user_id": 5,
+        "book_id": 4,
+        "rating": 5,
+        "comment": "Refactoring was easy to follow, and Martin Fowler's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-15T12:00:00"
+    },
+    {
+        "id": 17,
+        "user_id": 6,
+        "book_id": 4,
+        "rating": 3,
+        "comment": "I liked how Refactoring balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-02-17T13:00:00"
+    },
+    {
+        "id": 18,
+        "user_id": 7,
+        "book_id": 4,
+        "rating": 5,
+        "comment": "Refactoring had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-02-19T14:00:00"
+    },
+    {
+        "id": 19,
+        "user_id": 8,
+        "book_id": 4,
+        "rating": 4,
+        "comment": "This one made sense fast. Martin Fowler explains the core ideas in Refactoring without making them feel overcomplicated.",
+        "created_at": "2026-02-21T15:00:00"
+    },
+    {
+        "id": 20,
+        "user_id": 9,
+        "book_id": 4,
+        "rating": 4,
+        "comment": "Refactoring was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-02-23T16:00:00"
+    },
+    {
+        "id": 21,
+        "user_id": 5,
+        "book_id": 5,
+        "rating": 3,
+        "comment": "Python Crash Course was easy to follow, and Eric Matthes's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-17T12:00:00"
+    },
+    {
+        "id": 22,
+        "user_id": 6,
+        "book_id": 5,
+        "rating": 5,
+        "comment": "I liked how Python Crash Course balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-02-19T13:00:00"
+    },
+    {
+        "id": 23,
+        "user_id": 7,
+        "book_id": 5,
+        "rating": 4,
+        "comment": "Python Crash Course had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-02-21T14:00:00"
+    },
+    {
+        "id": 24,
+        "user_id": 8,
+        "book_id": 5,
+        "rating": 4,
+        "comment": "This one made sense fast. Eric Matthes explains the core ideas in Python Crash Course without making them feel overcomplicated.",
+        "created_at": "2026-02-23T15:00:00"
+    },
+    {
+        "id": 25,
+        "user_id": 9,
+        "book_id": 5,
+        "rating": 5,
+        "comment": "Python Crash Course was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-02-25T16:00:00"
+    },
+    {
+        "id": 26,
+        "user_id": 5,
+        "book_id": 6,
+        "rating": 5,
+        "comment": "Automate the Boring Stuff with Python was easy to follow, and Al Sweigart's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-19T12:00:00"
+    },
+    {
+        "id": 27,
+        "user_id": 6,
+        "book_id": 6,
+        "rating": 4,
+        "comment": "I liked how Automate the Boring Stuff with Python balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-02-21T13:00:00"
+    },
+    {
+        "id": 28,
+        "user_id": 7,
+        "book_id": 6,
+        "rating": 4,
+        "comment": "Automate the Boring Stuff with Python had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-02-23T14:00:00"
+    },
+    {
+        "id": 29,
+        "user_id": 8,
+        "book_id": 6,
+        "rating": 5,
+        "comment": "This one made sense fast. Al Sweigart explains the core ideas in Automate the Boring Stuff with Python without making them feel overcomplicated.",
+        "created_at": "2026-02-25T15:00:00"
+    },
+    {
+        "id": 30,
+        "user_id": 9,
+        "book_id": 6,
+        "rating": 3,
+        "comment": "Automate the Boring Stuff with Python was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-02-27T16:00:00"
+    },
+    {
+        "id": 31,
+        "user_id": 5,
+        "book_id": 7,
+        "rating": 4,
+        "comment": "Fluent Python was easy to follow, and Luciano Ramalho's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-21T12:00:00"
+    },
+    {
+        "id": 32,
+        "user_id": 6,
+        "book_id": 7,
+        "rating": 4,
+        "comment": "I liked how Fluent Python balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-02-23T13:00:00"
+    },
+    {
+        "id": 33,
+        "user_id": 7,
+        "book_id": 7,
+        "rating": 5,
+        "comment": "Fluent Python had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-02-25T14:00:00"
+    },
+    {
+        "id": 34,
+        "user_id": 8,
+        "book_id": 7,
+        "rating": 3,
+        "comment": "This one made sense fast. Luciano Ramalho explains the core ideas in Fluent Python without making them feel overcomplicated.",
+        "created_at": "2026-02-27T15:00:00"
+    },
+    {
+        "id": 35,
+        "user_id": 9,
+        "book_id": 7,
+        "rating": 5,
+        "comment": "Fluent Python was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-01T16:00:00"
+    },
+    {
+        "id": 36,
+        "user_id": 5,
+        "book_id": 8,
+        "rating": 4,
+        "comment": "Grokking Algorithms was easy to follow, and Aditya Bhargava's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-23T12:00:00"
+    },
+    {
+        "id": 37,
+        "user_id": 6,
+        "book_id": 8,
+        "rating": 5,
+        "comment": "I liked how Grokking Algorithms balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-02-25T13:00:00"
+    },
+    {
+        "id": 38,
+        "user_id": 7,
+        "book_id": 8,
+        "rating": 3,
+        "comment": "Grokking Algorithms had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-02-27T14:00:00"
+    },
+    {
+        "id": 39,
+        "user_id": 8,
+        "book_id": 8,
+        "rating": 5,
+        "comment": "This one made sense fast. Aditya Bhargava explains the core ideas in Grokking Algorithms without making them feel overcomplicated.",
+        "created_at": "2026-03-01T15:00:00"
+    },
+    {
+        "id": 40,
+        "user_id": 9,
+        "book_id": 8,
+        "rating": 4,
+        "comment": "Grokking Algorithms was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 41,
+        "user_id": 5,
+        "book_id": 9,
+        "rating": 5,
+        "comment": "Introduction to Algorithms was easy to follow, and Thomas H. Cormen's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-25T12:00:00"
+    },
+    {
+        "id": 42,
+        "user_id": 6,
+        "book_id": 9,
+        "rating": 3,
+        "comment": "I liked how Introduction to Algorithms balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-02-27T13:00:00"
+    },
+    {
+        "id": 43,
+        "user_id": 7,
+        "book_id": 9,
+        "rating": 5,
+        "comment": "Introduction to Algorithms had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-01T14:00:00"
+    },
+    {
+        "id": 44,
+        "user_id": 8,
+        "book_id": 9,
+        "rating": 4,
+        "comment": "This one made sense fast. Thomas H. Cormen explains the core ideas in Introduction to Algorithms without making them feel overcomplicated.",
+        "created_at": "2026-03-03T15:00:00"
+    },
+    {
+        "id": 45,
+        "user_id": 9,
+        "book_id": 9,
+        "rating": 4,
+        "comment": "Introduction to Algorithms was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-05T16:00:00"
+    },
+    {
+        "id": 46,
+        "user_id": 5,
+        "book_id": 10,
+        "rating": 3,
+        "comment": "Head First Design Patterns was easy to follow, and Eric Freeman's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-02-27T12:00:00"
+    },
+    {
+        "id": 47,
+        "user_id": 6,
+        "book_id": 10,
+        "rating": 5,
+        "comment": "I liked how Head First Design Patterns balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-01T13:00:00"
+    },
+    {
+        "id": 48,
+        "user_id": 7,
+        "book_id": 10,
+        "rating": 4,
+        "comment": "Head First Design Patterns had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-03T14:00:00"
+    },
+    {
+        "id": 49,
+        "user_id": 8,
+        "book_id": 10,
+        "rating": 4,
+        "comment": "This one made sense fast. Eric Freeman explains the core ideas in Head First Design Patterns without making them feel overcomplicated.",
+        "created_at": "2026-03-05T15:00:00"
+    },
+    {
+        "id": 50,
+        "user_id": 9,
+        "book_id": 10,
+        "rating": 5,
+        "comment": "Head First Design Patterns was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-07T16:00:00"
+    },
+    {
+        "id": 51,
+        "user_id": 5,
+        "book_id": 11,
+        "rating": 5,
+        "comment": "Effective Python was easy to follow, and Brett Slatkin's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-01T12:00:00"
+    },
+    {
+        "id": 52,
+        "user_id": 6,
+        "book_id": 11,
+        "rating": 4,
+        "comment": "I liked how Effective Python balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-03T13:00:00"
+    },
+    {
+        "id": 53,
+        "user_id": 7,
+        "book_id": 11,
+        "rating": 4,
+        "comment": "Effective Python had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-05T14:00:00"
+    },
+    {
+        "id": 54,
+        "user_id": 8,
+        "book_id": 11,
+        "rating": 5,
+        "comment": "This one made sense fast. Brett Slatkin explains the core ideas in Effective Python without making them feel overcomplicated.",
+        "created_at": "2026-03-07T15:00:00"
+    },
+    {
+        "id": 55,
+        "user_id": 9,
+        "book_id": 11,
+        "rating": 3,
+        "comment": "Effective Python was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-09T16:00:00"
+    },
+    {
+        "id": 56,
+        "user_id": 5,
+        "book_id": 12,
+        "rating": 4,
+        "comment": "Cracking the Coding Interview was easy to follow, and Gayle Laakmann McDowell's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-03T12:00:00"
+    },
+    {
+        "id": 57,
+        "user_id": 6,
+        "book_id": 12,
+        "rating": 4,
+        "comment": "I liked how Cracking the Coding Interview balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-05T13:00:00"
+    },
+    {
+        "id": 58,
+        "user_id": 7,
+        "book_id": 12,
+        "rating": 5,
+        "comment": "Cracking the Coding Interview had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-07T14:00:00"
+    },
+    {
+        "id": 59,
+        "user_id": 8,
+        "book_id": 12,
+        "rating": 3,
+        "comment": "This one made sense fast. Gayle Laakmann McDowell explains the core ideas in Cracking the Coding Interview without making them feel overcomplicated.",
+        "created_at": "2026-03-09T15:00:00"
+    },
+    {
+        "id": 60,
+        "user_id": 9,
+        "book_id": 12,
+        "rating": 5,
+        "comment": "Cracking the Coding Interview was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-11T16:00:00"
+    },
+    {
+        "id": 61,
         "user_id": 5,
         "book_id": 13,
         "rating": 4,
-        "comment": "You Don't Know JS Yet goes deeper than most JS books. Not beginner-light, but great once the basics already click.",
-        "created_at": "2026-03-03T09:30:00"
+        "comment": "You Don't Know JS Yet was easy to follow, and Kyle Simpson's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-05T12:00:00"
+    },
+    {
+        "id": 62,
+        "user_id": 6,
+        "book_id": 13,
+        "rating": 5,
+        "comment": "I liked how You Don't Know JS Yet balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-07T13:00:00"
+    },
+    {
+        "id": 63,
+        "user_id": 7,
+        "book_id": 13,
+        "rating": 3,
+        "comment": "You Don't Know JS Yet had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-09T14:00:00"
+    },
+    {
+        "id": 64,
+        "user_id": 8,
+        "book_id": 13,
+        "rating": 5,
+        "comment": "This one made sense fast. Kyle Simpson explains the core ideas in You Don't Know JS Yet without making them feel overcomplicated.",
+        "created_at": "2026-03-11T15:00:00"
+    },
+    {
+        "id": 65,
+        "user_id": 9,
+        "book_id": 13,
+        "rating": 4,
+        "comment": "You Don't Know JS Yet was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-13T16:00:00"
+    },
+    {
+        "id": 66,
+        "user_id": 5,
+        "book_id": 14,
+        "rating": 5,
+        "comment": "Eloquent JavaScript was easy to follow, and Marijn Haverbeke's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-07T12:00:00"
+    },
+    {
+        "id": 67,
+        "user_id": 6,
+        "book_id": 14,
+        "rating": 3,
+        "comment": "I liked how Eloquent JavaScript balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-09T13:00:00"
+    },
+    {
+        "id": 68,
+        "user_id": 7,
+        "book_id": 14,
+        "rating": 5,
+        "comment": "Eloquent JavaScript had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-11T14:00:00"
+    },
+    {
+        "id": 69,
+        "user_id": 8,
+        "book_id": 14,
+        "rating": 4,
+        "comment": "This one made sense fast. Marijn Haverbeke explains the core ideas in Eloquent JavaScript without making them feel overcomplicated.",
+        "created_at": "2026-03-13T15:00:00"
+    },
+    {
+        "id": 70,
+        "user_id": 9,
+        "book_id": 14,
+        "rating": 4,
+        "comment": "Eloquent JavaScript was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-15T16:00:00"
+    },
+    {
+        "id": 71,
+        "user_id": 5,
+        "book_id": 15,
+        "rating": 3,
+        "comment": "Deep Work was easy to follow, and Cal Newport's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-09T12:00:00"
+    },
+    {
+        "id": 72,
+        "user_id": 6,
+        "book_id": 15,
+        "rating": 5,
+        "comment": "I liked how Deep Work balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-11T13:00:00"
+    },
+    {
+        "id": 73,
+        "user_id": 7,
+        "book_id": 15,
+        "rating": 4,
+        "comment": "Deep Work had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-13T14:00:00"
+    },
+    {
+        "id": 74,
+        "user_id": 8,
+        "book_id": 15,
+        "rating": 4,
+        "comment": "This one made sense fast. Cal Newport explains the core ideas in Deep Work without making them feel overcomplicated.",
+        "created_at": "2026-03-15T15:00:00"
+    },
+    {
+        "id": 75,
+        "user_id": 9,
+        "book_id": 15,
+        "rating": 5,
+        "comment": "Deep Work was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-17T16:00:00"
+    },
+    {
+        "id": 76,
+        "user_id": 5,
+        "book_id": 16,
+        "rating": 5,
+        "comment": "Atomic Habits was easy to follow, and James Clear's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-11T12:00:00"
+    },
+    {
+        "id": 77,
+        "user_id": 6,
+        "book_id": 16,
+        "rating": 4,
+        "comment": "I liked how Atomic Habits balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-13T13:00:00"
+    },
+    {
+        "id": 78,
+        "user_id": 7,
+        "book_id": 16,
+        "rating": 4,
+        "comment": "Atomic Habits had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-15T14:00:00"
+    },
+    {
+        "id": 79,
+        "user_id": 8,
+        "book_id": 16,
+        "rating": 5,
+        "comment": "This one made sense fast. James Clear explains the core ideas in Atomic Habits without making them feel overcomplicated.",
+        "created_at": "2026-03-17T15:00:00"
+    },
+    {
+        "id": 80,
+        "user_id": 9,
+        "book_id": 16,
+        "rating": 3,
+        "comment": "Atomic Habits was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-19T16:00:00"
+    },
+    {
+        "id": 81,
+        "user_id": 5,
+        "book_id": 17,
+        "rating": 4,
+        "comment": "The Clean Coder was easy to follow, and Robert C. Martin's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-13T12:00:00"
+    },
+    {
+        "id": 82,
+        "user_id": 6,
+        "book_id": 17,
+        "rating": 4,
+        "comment": "I liked how The Clean Coder balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-15T13:00:00"
+    },
+    {
+        "id": 83,
+        "user_id": 7,
+        "book_id": 17,
+        "rating": 5,
+        "comment": "The Clean Coder had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-17T14:00:00"
+    },
+    {
+        "id": 84,
+        "user_id": 8,
+        "book_id": 17,
+        "rating": 3,
+        "comment": "This one made sense fast. Robert C. Martin explains the core ideas in The Clean Coder without making them feel overcomplicated.",
+        "created_at": "2026-03-19T15:00:00"
+    },
+    {
+        "id": 85,
+        "user_id": 9,
+        "book_id": 17,
+        "rating": 5,
+        "comment": "The Clean Coder was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-21T16:00:00"
+    },
+    {
+        "id": 86,
+        "user_id": 5,
+        "book_id": 18,
+        "rating": 4,
+        "comment": "Soft Skills was easy to follow, and John Sonmez's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-15T12:00:00"
+    },
+    {
+        "id": 87,
+        "user_id": 6,
+        "book_id": 18,
+        "rating": 5,
+        "comment": "I liked how Soft Skills balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-17T13:00:00"
+    },
+    {
+        "id": 88,
+        "user_id": 7,
+        "book_id": 18,
+        "rating": 3,
+        "comment": "Soft Skills had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-19T14:00:00"
+    },
+    {
+        "id": 89,
+        "user_id": 8,
+        "book_id": 18,
+        "rating": 5,
+        "comment": "This one made sense fast. John Sonmez explains the core ideas in Soft Skills without making them feel overcomplicated.",
+        "created_at": "2026-03-21T15:00:00"
+    },
+    {
+        "id": 90,
+        "user_id": 9,
+        "book_id": 18,
+        "rating": 4,
+        "comment": "Soft Skills was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-23T16:00:00"
+    },
+    {
+        "id": 91,
+        "user_id": 5,
+        "book_id": 19,
+        "rating": 5,
+        "comment": "Code Complete was easy to follow, and Steve McConnell's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-17T12:00:00"
+    },
+    {
+        "id": 92,
+        "user_id": 6,
+        "book_id": 19,
+        "rating": 3,
+        "comment": "I liked how Code Complete balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-19T13:00:00"
+    },
+    {
+        "id": 93,
+        "user_id": 7,
+        "book_id": 19,
+        "rating": 5,
+        "comment": "Code Complete had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-21T14:00:00"
+    },
+    {
+        "id": 94,
+        "user_id": 8,
+        "book_id": 19,
+        "rating": 4,
+        "comment": "This one made sense fast. Steve McConnell explains the core ideas in Code Complete without making them feel overcomplicated.",
+        "created_at": "2026-03-23T15:00:00"
+    },
+    {
+        "id": 95,
+        "user_id": 9,
+        "book_id": 19,
+        "rating": 4,
+        "comment": "Code Complete was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-25T16:00:00"
+    },
+    {
+        "id": 96,
+        "user_id": 5,
+        "book_id": 20,
+        "rating": 3,
+        "comment": "Working Effectively with Legacy Code was easy to follow, and Michael Feathers's main ideas actually stayed clear from start to finish.",
+        "created_at": "2026-03-19T12:00:00"
+    },
+    {
+        "id": 97,
+        "user_id": 6,
+        "book_id": 20,
+        "rating": 5,
+        "comment": "I liked how Working Effectively with Legacy Code balances useful detail with readable pacing. It never felt like homework the whole way through.",
+        "created_at": "2026-03-21T13:00:00"
+    },
+    {
+        "id": 98,
+        "user_id": 7,
+        "book_id": 20,
+        "rating": 4,
+        "comment": "Working Effectively with Legacy Code had a few slow sections, but the best parts were genuinely helpful and worth the time.",
+        "created_at": "2026-03-23T14:00:00"
+    },
+    {
+        "id": 99,
+        "user_id": 8,
+        "book_id": 20,
+        "rating": 4,
+        "comment": "This one made sense fast. Michael Feathers explains the core ideas in Working Effectively with Legacy Code without making them feel overcomplicated.",
+        "created_at": "2026-03-25T15:00:00"
+    },
+    {
+        "id": 100,
+        "user_id": 9,
+        "book_id": 20,
+        "rating": 5,
+        "comment": "Working Effectively with Legacy Code was solid overall. Not perfect, but I would still recommend it to someone picking a practical read.",
+        "created_at": "2026-03-27T16:00:00"
     }
 ]

@@ -44,14 +44,14 @@ python3 -m unittest discover -s tests -v
 ## Demo Data
 
 This branch ships with:
-- 6 sample users
+- 7 sample users
 - 20 books
 - 14 borrow records
 - 10 reviews
 
 Sample login:
-- Admin: `joyburgei` / `JoyAdmin123!`
-- Member: `abdalabakari` / `Reader123!`
+- Admin: `ashantikweyu` / `AshantiAdmin123!`
+- Member: `calebmunyoki` / `Reader123!`
 
 You can also log in with the matching email instead of the username.
 

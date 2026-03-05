@@ -78,5 +78,15 @@
         "salt": "3b8c5e625d2aa4a4c88c4dd5e21edaf6",
         "password_hash": "cdb0a9cb8071ea3fd0aceccfca66553be406ba4e5699344af9dccaf5e097cddb",
         "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 9,
+        "name": "George Okumu",
+        "username": "georgeokumu",
+        "email": "george.okumu.admin@libbuddy.com",
+        "role": "admin",
+        "salt": "eeca96676d1f1395cd8ce63651328ef0",
+        "password_hash": "dafad8397efdf76d75c499976b97fad96b210775d4ed00105c3b7835c9a76cb8",
+        "created_at": "2026-03-03T16:00:00"
     }
 ]

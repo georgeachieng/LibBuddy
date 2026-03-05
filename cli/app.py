@@ -425,9 +425,13 @@ class LibBuddyCLI:
             return
 
         self.current_user = user
-        print(
-            f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}. 👋".center(72)
-        )
+        user_dict = self._to_dict(user)
+        username = self._get_field(user_dict, "username", "name")
+        if self._get_field(user_dict, "role", default="user") == "admin":
+            self._line("Login successful. ✅".center(72))
+            self._line(f"Welcome, {username}. 👋".center(72))
+        else:
+            print(f"Login successful. Welcome, {username}. 👋")
 
     def logout(self) -> None:
         try:

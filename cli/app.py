@@ -566,9 +566,13 @@ class LibBuddyCLI:
         # This is the actual session handoff.
         # Delete it and every post-login feature thinks nobody is logged in.
         self.current_user = user
-        print(
-            f"Login successful. Welcome, {self._get_field(self._to_dict(user), 'username', 'name')}. 👋".center(72)
-        )
+        user_dict = self._to_dict(user)
+        username = self._get_field(user_dict, "username", "name")
+        if self._get_field(user_dict, "role", default="user") == "admin":
+            self._line("Login successful. ✅".center(72))
+            self._line(f"Welcome, {username}. 👋".center(72))
+        else:
+            print(f"Login successful. Welcome, {username}. 👋")
 
     # Logout clears both the service session and the CLI session.
     # Delete it and users can get stuck "logged in" until restart.

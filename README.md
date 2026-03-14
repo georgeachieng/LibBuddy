@@ -1,25 +1,63 @@
-# LibBuddy Project
+# LibBuddy
+
+LibBuddy is a Python CLI library system with:
+- registration and login
+- password hashing
+- admin vs member menus
+- book borrowing and returns
+- review and rating support
+- Open Library search/import for quick catalog seeding
+- JSON file persistence
+- Optional `tabulate` support for cleaner table views when installed
+
+## Project Structure
+
+```text
 libbuddy/
   main.py
   README.md
-  requirements.txt
+  cli/
   data/
     users.json
     books.json
     borrow_records.json
     reviews.json
   models/
-    person.py
-    user.py
-    book.py
-    borrow_record.py
-    review.py
   services/
-    auth_service.py
-    library_service.py
-    review_service.py
   storage/
-    json_store.py
   utils/
-    decorators.py
-    validators.py
+  tests/
+```
+
+## Run It
+
+```bash
+python3 main.py
+```
+
+## Run Tests
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+## Demo Data
+
+This branch ships with:
+- 9 sample users
+- 20 books
+- 14 borrow records
+- 10 reviews
+
+Sample login:
+- Admin: `ashantikweyu` / `AshantiAdmin123!`
+- Member: `calebmunyoki` / `Reader123!`
+
+You can also log in with the matching email instead of the username.
+
+## Notes
+
+- The first registered user becomes admin.
+- Members can only review books they have actually borrowed.
+- Borrowing is capped at 3 active books per user.
+- Admins can import books from Open Library without editing JSON by hand.

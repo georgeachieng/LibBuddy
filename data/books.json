@@ -1,1 +1,162 @@
-//write code here
+[
+    {
+        "id": 1,
+        "title": "Clean Code",
+        "author": "Robert C. Martin",
+        "isbn": "9780132350884",
+        "total_copies": 4,
+        "available_copies": 4
+    },
+    {
+        "id": 2,
+        "title": "The Pragmatic Programmer",
+        "author": "David Thomas",
+        "isbn": "9780135957059",
+        "total_copies": 3,
+        "available_copies": 3
+    },
+    {
+        "id": 3,
+        "title": "Design Patterns",
+        "author": "Erich Gamma",
+        "isbn": "9780201633610",
+        "total_copies": 2,
+        "available_copies": 1
+    },
+    {
+        "id": 4,
+        "title": "Refactoring",
+        "author": "Martin Fowler",
+        "isbn": "9780201485677",
+        "total_copies": 3,
+        "available_copies": 3
+    },
+    {
+        "id": 5,
+        "title": "Python Crash Course",
+        "author": "Eric Matthes",
+        "isbn": "9781593279288",
+        "total_copies": 5,
+        "available_copies": 5
+    },
+    {
+        "id": 6,
+        "title": "Automate the Boring Stuff with Python",
+        "author": "Al Sweigart",
+        "isbn": "9781593279929",
+        "total_copies": 4,
+        "available_copies": 4
+    },
+    {
+        "id": 7,
+        "title": "Fluent Python",
+        "author": "Luciano Ramalho",
+        "isbn": "9781492056355",
+        "total_copies": 3,
+        "available_copies": 2
+    },
+    {
+        "id": 8,
+        "title": "Grokking Algorithms",
+        "author": "Aditya Bhargava",
+        "isbn": "9781617292231",
+        "total_copies": 4,
+        "available_copies": 4
+    },
+    {
+        "id": 9,
+        "title": "Introduction to Algorithms",
+        "author": "Thomas H. Cormen",
+        "isbn": "9780262046305",
+        "total_copies": 2,
+        "available_copies": 1
+    },
+    {
+        "id": 10,
+        "title": "Head First Design Patterns",
+        "author": "Eric Freeman",
+        "isbn": "9780596007126",
+        "total_copies": 3,
+        "available_copies": 3
+    },
+    {
+        "id": 11,
+        "title": "Effective Python",
+        "author": "Brett Slatkin",
+        "isbn": "9780134853987",
+        "total_copies": 3,
+        "available_copies": 3
+    },
+    {
+        "id": 12,
+        "title": "Cracking the Coding Interview",
+        "author": "Gayle Laakmann McDowell",
+        "isbn": "9780984782857",
+        "total_copies": 4,
+        "available_copies": 4
+    },
+    {
+        "id": 13,
+        "title": "You Don't Know JS Yet",
+        "author": "Kyle Simpson",
+        "isbn": "9781091210096",
+        "total_copies": 3,
+        "available_copies": 3
+    },
+    {
+        "id": 14,
+        "title": "Eloquent JavaScript",
+        "author": "Marijn Haverbeke",
+        "isbn": "9781593279509",
+        "total_copies": 3,
+        "available_copies": 2
+    },
+    {
+        "id": 15,
+        "title": "Deep Work",
+        "author": "Cal Newport",
+        "isbn": "9781455586691",
+        "total_copies": 2,
+        "available_copies": 1
+    },
+    {
+        "id": 16,
+        "title": "Atomic Habits",
+        "author": "James Clear",
+        "isbn": "9780735211292",
+        "total_copies": 4,
+        "available_copies": 4
+    },
+    {
+        "id": 17,
+        "title": "The Clean Coder",
+        "author": "Robert C. Martin",
+        "isbn": "9780137081073",
+        "total_copies": 3,
+        "available_copies": 3
+    },
+    {
+        "id": 18,
+        "title": "Soft Skills",
+        "author": "John Sonmez",
+        "isbn": "9781617292392",
+        "total_copies": 2,
+        "available_copies": 2
+    },
+    {
+        "id": 19,
+        "title": "Code Complete",
+        "author": "Steve McConnell",
+        "isbn": "9780735619678",
+        "total_copies": 2,
+        "available_copies": 2
+    },
+    {
+        "id": 20,
+        "title": "Working Effectively with Legacy Code",
+        "author": "Michael Feathers",
+        "isbn": "9780131177055",
+        "total_copies": 2,
+        "available_copies": 2
+    }
+]

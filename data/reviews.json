@@ -1,1 +1,902 @@
-//write code here
+[
+    {
+        "id": 1,
+        "user_id": 5,
+        "reviewer_name": "Caleb Munyoki",
+        "book_id": 1,
+        "rating": 5,
+        "comment": "Clean Code was surprisingly easy to get through. Robert C. Martin kept it clear and the main points landed well.",
+        "created_at": "2026-02-06T10:00"
+    },
+    {
+        "id": 2,
+        "user_id": 6,
+        "reviewer_name": "Abigael Ongwae",
+        "book_id": 1,
+        "rating": 4,
+        "comment": "I liked how Clean Code stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-08T13:00"
+    },
+    {
+        "id": 3,
+        "user_id": 7,
+        "reviewer_name": "Eugene Ogutu",
+        "book_id": 1,
+        "rating": 4,
+        "comment": "Clean Code had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-10T16:00"
+    },
+    {
+        "id": 4,
+        "user_id": 8,
+        "reviewer_name": "Trina Kahu",
+        "book_id": 1,
+        "rating": 5,
+        "comment": "This one felt well paced. Robert C. Martin explained the ideas in a way that actually stuck.",
+        "created_at": "2026-02-12T16:00"
+    },
+    {
+        "id": 5,
+        "user_id": 201,
+        "reviewer_name": "Njeri Wambui",
+        "book_id": 1,
+        "rating": 3,
+        "comment": "Clean Code was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-02-14T19:00"
+    },
+    {
+        "id": 6,
+        "user_id": 8,
+        "reviewer_name": "Trina Kahu",
+        "book_id": 2,
+        "rating": 4,
+        "comment": "The Pragmatic Programmer was surprisingly easy to get through. David Thomas kept it clear and the main points landed well.",
+        "created_at": "2026-02-09T11:00"
+    },
+    {
+        "id": 7,
+        "user_id": 201,
+        "reviewer_name": "Njeri Wambui",
+        "book_id": 2,
+        "rating": 4,
+        "comment": "I liked how The Pragmatic Programmer stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-11T14:00"
+    },
+    {
+        "id": 8,
+        "user_id": 202,
+        "reviewer_name": "Kamau Kariuki",
+        "book_id": 2,
+        "rating": 5,
+        "comment": "The Pragmatic Programmer had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-13T17:00"
+    },
+    {
+        "id": 9,
+        "user_id": 203,
+        "reviewer_name": "Akinyi Auma",
+        "book_id": 2,
+        "rating": 3,
+        "comment": "This one felt well paced. David Thomas explained the ideas in a way that actually stuck.",
+        "created_at": "2026-02-15T17:00"
+    },
+    {
+        "id": 10,
+        "user_id": 204,
+        "reviewer_name": "Kiptoo Cheruiyot",
+        "book_id": 2,
+        "rating": 5,
+        "comment": "The Pragmatic Programmer was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-02-12T20:00"
+    },
+    {
+        "id": 11,
+        "user_id": 203,
+        "reviewer_name": "Akinyi Auma",
+        "book_id": 3,
+        "rating": 4,
+        "comment": "Design Patterns was surprisingly easy to get through. Erich Gamma kept it clear and the main points landed well.",
+        "created_at": "2026-02-12T12:00"
+    },
+    {
+        "id": 12,
+        "user_id": 204,
+        "reviewer_name": "Kiptoo Cheruiyot",
+        "book_id": 3,
+        "rating": 5,
+        "comment": "I liked how Design Patterns stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-14T15:00"
+    },
+    {
+        "id": 13,
+        "user_id": 205,
+        "reviewer_name": "Chebet Jelagat",
+        "book_id": 3,
+        "rating": 3,
+        "comment": "Design Patterns had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-16T18:00"
+    },
+    {
+        "id": 14,
+        "user_id": 206,
+        "reviewer_name": "Mutiso Kilonzo",
+        "book_id": 3,
+        "rating": 5,
+        "comment": "This one felt well paced. Erich Gamma explained the ideas in a way that actually stuck.",
+        "created_at": "2026-02-13T18:00"
+    },
+    {
+        "id": 15,
+        "user_id": 207,
+        "reviewer_name": "Wekesa Barasa",
+        "book_id": 3,
+        "rating": 4,
+        "comment": "Design Patterns was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-02-15T21:00"
+    },
+    {
+        "id": 16,
+        "user_id": 206,
+        "reviewer_name": "Mutiso Kilonzo",
+        "book_id": 4,
+        "rating": 5,
+        "comment": "Refactoring was surprisingly easy to get through. Martin Fowler kept it clear and the main points landed well.",
+        "created_at": "2026-02-15T13:00"
+    },
+    {
+        "id": 17,
+        "user_id": 207,
+        "reviewer_name": "Wekesa Barasa",
+        "book_id": 4,
+        "rating": 3,
+        "comment": "I liked how Refactoring stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-17T16:00"
+    },
+    {
+        "id": 18,
+        "user_id": 208,
+        "reviewer_name": "Atieno Adhiambo",
+        "book_id": 4,
+        "rating": 5,
+        "comment": "Refactoring had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-14T19:00"
+    },
+    {
+        "id": 19,
+        "user_id": 209,
+        "reviewer_name": "Muthoni Wanjiru",
+        "book_id": 4,
+        "rating": 4,
+        "comment": "This one felt well paced. Martin Fowler explained the ideas in a way that actually stuck.",
+        "created_at": "2026-02-16T19:00"
+    },
+    {
+        "id": 20,
+        "user_id": 210,
+        "reviewer_name": "Otieno Odhiambo",
+        "book_id": 4,
+        "rating": 4,
+        "comment": "Refactoring was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-02-18T15:00"
+    },
+    {
+        "id": 21,
+        "user_id": 209,
+        "reviewer_name": "Muthoni Wanjiru",
+        "book_id": 5,
+        "rating": 3,
+        "comment": "Python Crash Course was surprisingly easy to get through. Eric Matthes kept it clear and the main points landed well.",
+        "created_at": "2026-02-18T14:00"
+    },
+    {
+        "id": 22,
+        "user_id": 210,
+        "reviewer_name": "Otieno Odhiambo",
+        "book_id": 5,
+        "rating": 5,
+        "comment": "I liked how Python Crash Course stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-15T17:00"
+    },
+    {
+        "id": 23,
+        "user_id": 211,
+        "reviewer_name": "Nasimiyu Simiyu",
+        "book_id": 5,
+        "rating": 4,
+        "comment": "Python Crash Course had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-17T20:00"
+    },
+    {
+        "id": 24,
+        "user_id": 212,
+        "reviewer_name": "Mwikali Nduku",
+        "book_id": 5,
+        "rating": 4,
+        "comment": "This one felt well paced. Eric Matthes explained the ideas in a way that actually stuck.",
+        "created_at": "2026-02-19T13:00"
+    },
+    {
+        "id": 25,
+        "user_id": 5,
+        "reviewer_name": "Caleb Munyoki",
+        "book_id": 5,
+        "rating": 5,
+        "comment": "Python Crash Course was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-02-21T16:00"
+    },
+    {
+        "id": 26,
+        "user_id": 212,
+        "reviewer_name": "Mwikali Nduku",
+        "book_id": 6,
+        "rating": 5,
+        "comment": "Automate the Boring Stuff with Python was surprisingly easy to get through. Al Sweigart kept it clear and the main points landed well.",
+        "created_at": "2026-02-16T15:00"
+    },
+    {
+        "id": 27,
+        "user_id": 5,
+        "reviewer_name": "Caleb Munyoki",
+        "book_id": 6,
+        "rating": 4,
+        "comment": "I liked how Automate the Boring Stuff with Python stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-18T18:00"
+    },
+    {
+        "id": 28,
+        "user_id": 6,
+        "reviewer_name": "Abigael Ongwae",
+        "book_id": 6,
+        "rating": 4,
+        "comment": "Automate the Boring Stuff with Python had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-20T14:00"
+    },
+    {
+        "id": 29,
+        "user_id": 7,
+        "reviewer_name": "Eugene Ogutu",
+        "book_id": 6,
+        "rating": 5,
+        "comment": "This one felt well paced. Al Sweigart explained the ideas in a way that actually stuck.",
+        "created_at": "2026-02-22T14:00"
+    },
+    {
+        "id": 30,
+        "user_id": 8,
+        "reviewer_name": "Trina Kahu",
+        "book_id": 6,
+        "rating": 3,
+        "comment": "Automate the Boring Stuff with Python was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-02-24T17:00"
+    },
+    {
+        "id": 31,
+        "user_id": 7,
+        "reviewer_name": "Eugene Ogutu",
+        "book_id": 7,
+        "rating": 4,
+        "comment": "Fluent Python was surprisingly easy to get through. Luciano Ramalho kept it clear and the main points landed well.",
+        "created_at": "2026-02-19T16:00"
+    },
+    {
+        "id": 32,
+        "user_id": 8,
+        "reviewer_name": "Trina Kahu",
+        "book_id": 7,
+        "rating": 4,
+        "comment": "I liked how Fluent Python stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-21T12:00"
+    },
+    {
+        "id": 33,
+        "user_id": 201,
+        "reviewer_name": "Njeri Wambui",
+        "book_id": 7,
+        "rating": 5,
+        "comment": "Fluent Python had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-23T15:00"
+    },
+    {
+        "id": 34,
+        "user_id": 202,
+        "reviewer_name": "Kamau Kariuki",
+        "book_id": 7,
+        "rating": 3,
+        "comment": "This one felt well paced. Luciano Ramalho explained the ideas in a way that actually stuck.",
+        "created_at": "2026-02-25T15:00"
+    },
+    {
+        "id": 35,
+        "user_id": 203,
+        "reviewer_name": "Akinyi Auma",
+        "book_id": 7,
+        "rating": 5,
+        "comment": "Fluent Python was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-02-22T18:00"
+    },
+    {
+        "id": 36,
+        "user_id": 202,
+        "reviewer_name": "Kamau Kariuki",
+        "book_id": 8,
+        "rating": 4,
+        "comment": "Grokking Algorithms was surprisingly easy to get through. Aditya Bhargava kept it clear and the main points landed well.",
+        "created_at": "2026-02-22T10:00"
+    },
+    {
+        "id": 37,
+        "user_id": 203,
+        "reviewer_name": "Akinyi Auma",
+        "book_id": 8,
+        "rating": 5,
+        "comment": "I liked how Grokking Algorithms stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-24T13:00"
+    },
+    {
+        "id": 38,
+        "user_id": 204,
+        "reviewer_name": "Kiptoo Cheruiyot",
+        "book_id": 8,
+        "rating": 3,
+        "comment": "Grokking Algorithms had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-26T16:00"
+    },
+    {
+        "id": 39,
+        "user_id": 205,
+        "reviewer_name": "Chebet Jelagat",
+        "book_id": 8,
+        "rating": 5,
+        "comment": "This one felt well paced. Aditya Bhargava explained the ideas in a way that actually stuck.",
+        "created_at": "2026-02-23T16:00"
+    },
+    {
+        "id": 40,
+        "user_id": 206,
+        "reviewer_name": "Mutiso Kilonzo",
+        "book_id": 8,
+        "rating": 4,
+        "comment": "Grokking Algorithms was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-02-25T19:00"
+    },
+    {
+        "id": 41,
+        "user_id": 205,
+        "reviewer_name": "Chebet Jelagat",
+        "book_id": 9,
+        "rating": 5,
+        "comment": "Introduction to Algorithms was surprisingly easy to get through. Thomas H. Cormen kept it clear and the main points landed well.",
+        "created_at": "2026-02-25T11:00"
+    },
+    {
+        "id": 42,
+        "user_id": 206,
+        "reviewer_name": "Mutiso Kilonzo",
+        "book_id": 9,
+        "rating": 3,
+        "comment": "I liked how Introduction to Algorithms stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-27T14:00"
+    },
+    {
+        "id": 43,
+        "user_id": 207,
+        "reviewer_name": "Wekesa Barasa",
+        "book_id": 9,
+        "rating": 5,
+        "comment": "Introduction to Algorithms had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-24T17:00"
+    },
+    {
+        "id": 44,
+        "user_id": 208,
+        "reviewer_name": "Atieno Adhiambo",
+        "book_id": 9,
+        "rating": 4,
+        "comment": "This one felt well paced. Thomas H. Cormen explained the ideas in a way that actually stuck.",
+        "created_at": "2026-02-26T17:00"
+    },
+    {
+        "id": 45,
+        "user_id": 209,
+        "reviewer_name": "Muthoni Wanjiru",
+        "book_id": 9,
+        "rating": 4,
+        "comment": "Introduction to Algorithms was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-02-28T20:00"
+    },
+    {
+        "id": 46,
+        "user_id": 208,
+        "reviewer_name": "Atieno Adhiambo",
+        "book_id": 10,
+        "rating": 3,
+        "comment": "Head First Design Patterns was surprisingly easy to get through. Eric Freeman kept it clear and the main points landed well.",
+        "created_at": "2026-02-28T12:00"
+    },
+    {
+        "id": 47,
+        "user_id": 209,
+        "reviewer_name": "Muthoni Wanjiru",
+        "book_id": 10,
+        "rating": 5,
+        "comment": "I liked how Head First Design Patterns stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-25T15:00"
+    },
+    {
+        "id": 48,
+        "user_id": 210,
+        "reviewer_name": "Otieno Odhiambo",
+        "book_id": 10,
+        "rating": 4,
+        "comment": "Head First Design Patterns had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-02-27T18:00"
+    },
+    {
+        "id": 49,
+        "user_id": 211,
+        "reviewer_name": "Nasimiyu Simiyu",
+        "book_id": 10,
+        "rating": 4,
+        "comment": "This one felt well paced. Eric Freeman explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-01T18:00"
+    },
+    {
+        "id": 50,
+        "user_id": 212,
+        "reviewer_name": "Mwikali Nduku",
+        "book_id": 10,
+        "rating": 5,
+        "comment": "Head First Design Patterns was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-03T21:00"
+    },
+    {
+        "id": 51,
+        "user_id": 211,
+        "reviewer_name": "Nasimiyu Simiyu",
+        "book_id": 11,
+        "rating": 5,
+        "comment": "Effective Python was surprisingly easy to get through. Brett Slatkin kept it clear and the main points landed well.",
+        "created_at": "2026-02-26T13:00"
+    },
+    {
+        "id": 52,
+        "user_id": 212,
+        "reviewer_name": "Mwikali Nduku",
+        "book_id": 11,
+        "rating": 4,
+        "comment": "I liked how Effective Python stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-02-28T16:00"
+    },
+    {
+        "id": 53,
+        "user_id": 5,
+        "reviewer_name": "Caleb Munyoki",
+        "book_id": 11,
+        "rating": 4,
+        "comment": "Effective Python had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-02T19:00"
+    },
+    {
+        "id": 54,
+        "user_id": 6,
+        "reviewer_name": "Abigael Ongwae",
+        "book_id": 11,
+        "rating": 5,
+        "comment": "This one felt well paced. Brett Slatkin explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-04T19:00"
+    },
+    {
+        "id": 55,
+        "user_id": 7,
+        "reviewer_name": "Eugene Ogutu",
+        "book_id": 11,
+        "rating": 3,
+        "comment": "Effective Python was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-06T15:00"
+    },
+    {
+        "id": 56,
+        "user_id": 6,
+        "reviewer_name": "Abigael Ongwae",
+        "book_id": 12,
+        "rating": 4,
+        "comment": "Cracking the Coding Interview was surprisingly easy to get through. Gayle Laakmann McDowell kept it clear and the main points landed well.",
+        "created_at": "2026-03-01T14:00"
+    },
+    {
+        "id": 57,
+        "user_id": 7,
+        "reviewer_name": "Eugene Ogutu",
+        "book_id": 12,
+        "rating": 4,
+        "comment": "I liked how Cracking the Coding Interview stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-03-03T17:00"
+    },
+    {
+        "id": 58,
+        "user_id": 8,
+        "reviewer_name": "Trina Kahu",
+        "book_id": 12,
+        "rating": 5,
+        "comment": "Cracking the Coding Interview had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-05T20:00"
+    },
+    {
+        "id": 59,
+        "user_id": 201,
+        "reviewer_name": "Njeri Wambui",
+        "book_id": 12,
+        "rating": 3,
+        "comment": "This one felt well paced. Gayle Laakmann McDowell explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-07T13:00"
+    },
+    {
+        "id": 60,
+        "user_id": 202,
+        "reviewer_name": "Kamau Kariuki",
+        "book_id": 12,
+        "rating": 5,
+        "comment": "Cracking the Coding Interview was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-04T16:00"
+    },
+    {
+        "id": 61,
+        "user_id": 201,
+        "reviewer_name": "Njeri Wambui",
+        "book_id": 13,
+        "rating": 4,
+        "comment": "You Don't Know JS Yet was surprisingly easy to get through. Kyle Simpson kept it clear and the main points landed well.",
+        "created_at": "2026-03-04T15:00"
+    },
+    {
+        "id": 62,
+        "user_id": 202,
+        "reviewer_name": "Kamau Kariuki",
+        "book_id": 13,
+        "rating": 5,
+        "comment": "I liked how You Don't Know JS Yet stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-03-06T18:00"
+    },
+    {
+        "id": 63,
+        "user_id": 203,
+        "reviewer_name": "Akinyi Auma",
+        "book_id": 13,
+        "rating": 3,
+        "comment": "You Don't Know JS Yet had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-08T14:00"
+    },
+    {
+        "id": 64,
+        "user_id": 204,
+        "reviewer_name": "Kiptoo Cheruiyot",
+        "book_id": 13,
+        "rating": 5,
+        "comment": "This one felt well paced. Kyle Simpson explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-05T14:00"
+    },
+    {
+        "id": 65,
+        "user_id": 205,
+        "reviewer_name": "Chebet Jelagat",
+        "book_id": 13,
+        "rating": 4,
+        "comment": "You Don't Know JS Yet was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-07T17:00"
+    },
+    {
+        "id": 66,
+        "user_id": 204,
+        "reviewer_name": "Kiptoo Cheruiyot",
+        "book_id": 14,
+        "rating": 5,
+        "comment": "Eloquent JavaScript was surprisingly easy to get through. Marijn Haverbeke kept it clear and the main points landed well.",
+        "created_at": "2026-03-07T16:00"
+    },
+    {
+        "id": 67,
+        "user_id": 205,
+        "reviewer_name": "Chebet Jelagat",
+        "book_id": 14,
+        "rating": 3,
+        "comment": "I liked how Eloquent JavaScript stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-03-09T12:00"
+    },
+    {
+        "id": 68,
+        "user_id": 206,
+        "reviewer_name": "Mutiso Kilonzo",
+        "book_id": 14,
+        "rating": 5,
+        "comment": "Eloquent JavaScript had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-06T15:00"
+    },
+    {
+        "id": 69,
+        "user_id": 207,
+        "reviewer_name": "Wekesa Barasa",
+        "book_id": 14,
+        "rating": 4,
+        "comment": "This one felt well paced. Marijn Haverbeke explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-08T15:00"
+    },
+    {
+        "id": 70,
+        "user_id": 208,
+        "reviewer_name": "Atieno Adhiambo",
+        "book_id": 14,
+        "rating": 4,
+        "comment": "Eloquent JavaScript was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-10T18:00"
+    },
+    {
+        "id": 71,
+        "user_id": 207,
+        "reviewer_name": "Wekesa Barasa",
+        "book_id": 15,
+        "rating": 3,
+        "comment": "Deep Work was surprisingly easy to get through. Cal Newport kept it clear and the main points landed well.",
+        "created_at": "2026-03-10T10:00"
+    },
+    {
+        "id": 72,
+        "user_id": 208,
+        "reviewer_name": "Atieno Adhiambo",
+        "book_id": 15,
+        "rating": 5,
+        "comment": "I liked how Deep Work stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-03-07T13:00"
+    },
+    {
+        "id": 73,
+        "user_id": 209,
+        "reviewer_name": "Muthoni Wanjiru",
+        "book_id": 15,
+        "rating": 4,
+        "comment": "Deep Work had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-09T16:00"
+    },
+    {
+        "id": 74,
+        "user_id": 210,
+        "reviewer_name": "Otieno Odhiambo",
+        "book_id": 15,
+        "rating": 4,
+        "comment": "This one felt well paced. Cal Newport explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-11T16:00"
+    },
+    {
+        "id": 75,
+        "user_id": 211,
+        "reviewer_name": "Nasimiyu Simiyu",
+        "book_id": 15,
+        "rating": 5,
+        "comment": "Deep Work was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-13T19:00"
+    },
+    {
+        "id": 76,
+        "user_id": 210,
+        "reviewer_name": "Otieno Odhiambo",
+        "book_id": 16,
+        "rating": 5,
+        "comment": "Atomic Habits was surprisingly easy to get through. James Clear kept it clear and the main points landed well.",
+        "created_at": "2026-03-08T11:00"
+    },
+    {
+        "id": 77,
+        "user_id": 211,
+        "reviewer_name": "Nasimiyu Simiyu",
+        "book_id": 16,
+        "rating": 4,
+        "comment": "I liked how Atomic Habits stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-03-10T14:00"
+    },
+    {
+        "id": 78,
+        "user_id": 212,
+        "reviewer_name": "Mwikali Nduku",
+        "book_id": 16,
+        "rating": 4,
+        "comment": "Atomic Habits had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-12T17:00"
+    },
+    {
+        "id": 79,
+        "user_id": 5,
+        "reviewer_name": "Caleb Munyoki",
+        "book_id": 16,
+        "rating": 5,
+        "comment": "This one felt well paced. James Clear explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-14T17:00"
+    },
+    {
+        "id": 80,
+        "user_id": 6,
+        "reviewer_name": "Abigael Ongwae",
+        "book_id": 16,
+        "rating": 3,
+        "comment": "Atomic Habits was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-16T20:00"
+    },
+    {
+        "id": 81,
+        "user_id": 5,
+        "reviewer_name": "Caleb Munyoki",
+        "book_id": 17,
+        "rating": 4,
+        "comment": "The Clean Coder was surprisingly easy to get through. Robert C. Martin kept it clear and the main points landed well.",
+        "created_at": "2026-03-11T12:00"
+    },
+    {
+        "id": 82,
+        "user_id": 6,
+        "reviewer_name": "Abigael Ongwae",
+        "book_id": 17,
+        "rating": 4,
+        "comment": "I liked how The Clean Coder stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-03-13T15:00"
+    },
+    {
+        "id": 83,
+        "user_id": 7,
+        "reviewer_name": "Eugene Ogutu",
+        "book_id": 17,
+        "rating": 5,
+        "comment": "The Clean Coder had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-15T18:00"
+    },
+    {
+        "id": 84,
+        "user_id": 8,
+        "reviewer_name": "Trina Kahu",
+        "book_id": 17,
+        "rating": 3,
+        "comment": "This one felt well paced. Robert C. Martin explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-17T18:00"
+    },
+    {
+        "id": 85,
+        "user_id": 201,
+        "reviewer_name": "Njeri Wambui",
+        "book_id": 17,
+        "rating": 5,
+        "comment": "The Clean Coder was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-14T21:00"
+    },
+    {
+        "id": 86,
+        "user_id": 8,
+        "reviewer_name": "Trina Kahu",
+        "book_id": 18,
+        "rating": 4,
+        "comment": "Soft Skills was surprisingly easy to get through. John Sonmez kept it clear and the main points landed well.",
+        "created_at": "2026-03-14T13:00"
+    },
+    {
+        "id": 87,
+        "user_id": 201,
+        "reviewer_name": "Njeri Wambui",
+        "book_id": 18,
+        "rating": 5,
+        "comment": "I liked how Soft Skills stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-03-16T16:00"
+    },
+    {
+        "id": 88,
+        "user_id": 202,
+        "reviewer_name": "Kamau Kariuki",
+        "book_id": 18,
+        "rating": 3,
+        "comment": "Soft Skills had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-18T19:00"
+    },
+    {
+        "id": 89,
+        "user_id": 203,
+        "reviewer_name": "Akinyi Auma",
+        "book_id": 18,
+        "rating": 5,
+        "comment": "This one felt well paced. John Sonmez explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-15T19:00"
+    },
+    {
+        "id": 90,
+        "user_id": 204,
+        "reviewer_name": "Kiptoo Cheruiyot",
+        "book_id": 18,
+        "rating": 4,
+        "comment": "Soft Skills was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-17T15:00"
+    },
+    {
+        "id": 91,
+        "user_id": 203,
+        "reviewer_name": "Akinyi Auma",
+        "book_id": 19,
+        "rating": 5,
+        "comment": "Code Complete was surprisingly easy to get through. Steve McConnell kept it clear and the main points landed well.",
+        "created_at": "2026-03-17T14:00"
+    },
+    {
+        "id": 92,
+        "user_id": 204,
+        "reviewer_name": "Kiptoo Cheruiyot",
+        "book_id": 19,
+        "rating": 3,
+        "comment": "I liked how Code Complete stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-03-19T17:00"
+    },
+    {
+        "id": 93,
+        "user_id": 205,
+        "reviewer_name": "Chebet Jelagat",
+        "book_id": 19,
+        "rating": 5,
+        "comment": "Code Complete had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-16T20:00"
+    },
+    {
+        "id": 94,
+        "user_id": 206,
+        "reviewer_name": "Mutiso Kilonzo",
+        "book_id": 19,
+        "rating": 4,
+        "comment": "This one felt well paced. Steve McConnell explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-18T13:00"
+    },
+    {
+        "id": 95,
+        "user_id": 207,
+        "reviewer_name": "Wekesa Barasa",
+        "book_id": 19,
+        "rating": 4,
+        "comment": "Code Complete was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-20T16:00"
+    },
+    {
+        "id": 96,
+        "user_id": 206,
+        "reviewer_name": "Mutiso Kilonzo",
+        "book_id": 20,
+        "rating": 3,
+        "comment": "Working Effectively with Legacy Code was surprisingly easy to get through. Michael Feathers kept it clear and the main points landed well.",
+        "created_at": "2026-03-20T15:00"
+    },
+    {
+        "id": 97,
+        "user_id": 207,
+        "reviewer_name": "Wekesa Barasa",
+        "book_id": 20,
+        "rating": 5,
+        "comment": "I liked how Working Effectively with Legacy Code stayed practical. It gave enough detail without dragging the whole thing out.",
+        "created_at": "2026-03-17T18:00"
+    },
+    {
+        "id": 98,
+        "user_id": 208,
+        "reviewer_name": "Atieno Adhiambo",
+        "book_id": 20,
+        "rating": 4,
+        "comment": "Working Effectively with Legacy Code had a few slow sections, but the stronger parts made it worth finishing in the end.",
+        "created_at": "2026-03-19T14:00"
+    },
+    {
+        "id": 99,
+        "user_id": 209,
+        "reviewer_name": "Muthoni Wanjiru",
+        "book_id": 20,
+        "rating": 4,
+        "comment": "This one felt well paced. Michael Feathers explained the ideas in a way that actually stuck.",
+        "created_at": "2026-03-21T14:00"
+    },
+    {
+        "id": 100,
+        "user_id": 210,
+        "reviewer_name": "Otieno Odhiambo",
+        "book_id": 20,
+        "rating": 5,
+        "comment": "Working Effectively with Legacy Code was solid overall. I would still recommend it to someone looking for a useful read.",
+        "created_at": "2026-03-23T17:00"
+    }
+]

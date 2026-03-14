@@ -1,1 +1,92 @@
-//write code here
+[
+    {
+        "id": 1,
+        "name": "Joy Burgei",
+        "username": "joyburgei",
+        "email": "joy.admin@libbuddy.com",
+        "role": "admin",
+        "salt": "8b4aea5f170cef508a2d6bf37f89db9a",
+        "password_hash": "6329f57b439abeb95c8fccd0be310d4ddb328088a27a7ec00b386d1b47042576",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 2,
+        "name": "Ashanti Kweyu",
+        "username": "ashantikweyu",
+        "email": "ashanti.admin@libbuddy.com",
+        "role": "admin",
+        "salt": "2dd0246a1bf48bae60af6d46b4fb5a2d",
+        "password_hash": "b809ff9cf5b6bfb5976c41b277ded282274a49534d2f4e8bfd49758527e6a211",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 3,
+        "name": "George Achieng",
+        "username": "georgeachieng",
+        "email": "george.admin@libbuddy.com",
+        "role": "admin",
+        "salt": "0fcb57018b1daae9b8a2a6eb90ea10ca",
+        "password_hash": "4c50680b07e920cd7dc2d3d0a2641959240aa1d09f3027b2f3c5fb0d9a7264e7",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 4,
+        "name": "Elvis Yampoy",
+        "username": "elvisyampoy",
+        "email": "elvis.admin@libbuddy.com",
+        "role": "admin",
+        "salt": "5f3d3f93b0db31d62b8033de37a0f0e0",
+        "password_hash": "dcba31ec4257ec78325a0b66d3d155f61243246b72c948b40f8918f68dbb091d",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 5,
+        "name": "Caleb Munyoki",
+        "username": "calebmunyoki",
+        "email": "caleb@libbuddy.com",
+        "role": "user",
+        "salt": "8ac95b0ad6915a84ac5ed71d24f31b1e",
+        "password_hash": "8721763a49296b829018a54c0bbe4fe96bc8887190f9405b5a6465f09d0987bd",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 6,
+        "name": "Abigael Ongwae",
+        "username": "abigaelongwae",
+        "email": "abigael@libbuddy.com",
+        "role": "user",
+        "salt": "a8c726d7e5813571a6ed29e5e2a92a24",
+        "password_hash": "e480d2ecdf7d99c11431f3c0ddb94c7b61f63f8260d3bc5d7782b4fe23c0970a",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 7,
+        "name": "Eugene Ogutu",
+        "username": "eugeneogutu",
+        "email": "eugene.ogutu1@student.moringaschool.com",
+        "role": "user",
+        "salt": "d66d33e0200c44756fa8e6bfeb4647b6",
+        "password_hash": "0a925fb57bd336d0f09af5d6fd27a553d0b5d7479e6e3174b45cb8821e94b621",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 8,
+        "name": "Trina Kahu",
+        "username": "trinakahu",
+        "email": "trina.luseno@student.moringaschool.com",
+        "role": "user",
+        "salt": "3b8c5e625d2aa4a4c88c4dd5e21edaf6",
+        "password_hash": "cdb0a9cb8071ea3fd0aceccfca66553be406ba4e5699344af9dccaf5e097cddb",
+        "created_at": "2026-03-03T16:00:00"
+    },
+    {
+        "id": 9,
+        "name": "George Okumu",
+        "username": "georgeokumu",
+        "email": "george.okumu.admin@libbuddy.com",
+        "role": "admin",
+        "salt": "eeca96676d1f1395cd8ce63651328ef0",
+        "password_hash": "dafad8397efdf76d75c499976b97fad96b210775d4ed00105c3b7835c9a76cb8",
+        "created_at": "2026-03-03T16:00:00"
+    }
+]
